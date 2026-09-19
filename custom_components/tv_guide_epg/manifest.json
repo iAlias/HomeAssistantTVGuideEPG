@@ -4,9 +4,9 @@
   "codeowners": ["@iAlias"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/iAlias/HomeAssistantTvGuideMulti",
+  "documentation": "https://github.com/iAlias/HomeAssistantTVGuideEPG",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/iAlias/HomeAssistantTvGuideMulti/issues",
+  "issue_tracker": "https://github.com/iAlias/HomeAssistantTVGuideEPG/issues",
   "requirements": [
     "aiohttp>=3.8.4",
     "async_timeout>=4.0.3",

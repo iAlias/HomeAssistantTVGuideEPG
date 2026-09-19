@@ -4,7 +4,7 @@
 
 **International TV schedules inside Home Assistant — pick your country when you add the integration.**
 
-[![Validate](https://github.com/iAlias/HomeAssistantTvGuideMulti/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTvGuideMulti/actions/workflows/validate.yml)
+[![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange)](custom_components/tv_guide_epg/manifest.json)
@@ -68,7 +68,7 @@ country's own language.
 ### 1. The integration, via HACS
 
 1. HACS → Integrations → top-right menu → **Custom repositories**
-2. Add `https://github.com/iAlias/HomeAssistantTvGuideMulti`, category **Integration**
+2. Add `https://github.com/iAlias/HomeAssistantTVGuideEPG`, category **Integration**
 3. Install, then restart Home Assistant
 4. **Settings → Devices & services → Add integration** → search **TV Guide EPG**
 5. Pick a country and confirm the name (it becomes the prefix for both sensors)
