@@ -204,6 +204,10 @@ class XmltvSource(ScheduleSource):
         self._refresh_minutes = refresh_minutes
 
     @property
+    def channels(self) -> List[str]:
+        return [self._channel_names.get(cid, cid) for cid in self._channel_order]
+
+    @property
     def refresh_interval(self) -> timedelta:
         return timedelta(minutes=self._refresh_minutes)
 

@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-1.0.1-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.0.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇮🇹 [Leggi in italiano](README.it.md)
@@ -50,18 +50,19 @@ programme data were deliberately left out. More countries can be added later; se
 
 ## What it installs
 
-Per country instance:
+**Two sensors per channel**, so every channel is usable on its own in dashboards and automations:
 
 | Entity | State | Attributes |
 |---|---|---|
-| `<name> - Ora in onda` | the current programme on the first configured channel | `programmi_correnti`: a channel → programme-info mapping, plus `nazione` and `fonte` |
-| `<name> - Prima serata` | the evening programme on the first configured channel | `prima_serata`: a channel → programme-info mapping, plus `nazione` and `fonte` |
+| `<channel> - Ora in onda` | title of what is on that channel right now | `orario_inizio`, `orario_fine`, `genere`, `locandina`, `descrizione`, `canale`, `nazione`, `fonte`, `tipo`, `posizione` |
+| `<channel> - Prima serata` | title of that channel's prime-time programme | same as above |
 | `In onda: <favorite>` (one per configured favorite) | on when that title is airing now, on any of the instance's channels | `canali`: matching channel → title |
 
-Each programme carries `titolo`, `orario_inizio`, `orario_fine`, `genere`, `locandina` and
-`descrizione` (fields the source doesn't publish come back empty). Attribute *keys* are Italian for
-consistency with this author's other Home Assistant projects; attribute *values* are in the source
-country's own language.
+That is **18 entities for Italy** (9 channels), 10 for the UK and 12 each for Germany, France and
+Spain, plus one per favorite. A channel the source has no data for reads `Nessun dato`.
+
+Attribute *keys* are Italian for consistency with this author's other Home Assistant projects;
+attribute *values* are in the source country's own language.
 
 ## Installation
 
@@ -74,6 +75,12 @@ country's own language.
 5. Pick a country and confirm the name (it becomes the prefix for both sensors)
 
 Add the integration again to follow a second country. Each country can only be added once.
+
+> **Upgrading from 1.x?** The two aggregate sensors (`<name> - Ora in onda` and
+> `<name> - Prima serata`, which held every channel in their attributes) are gone, replaced by two
+> sensors per channel. Delete any dashboard card or automation that referenced them, update the
+> card to the configuration shown below, and remove the two orphaned entities from
+> **Settings → Devices & services → Entities**.
 
 ### 2. The card
 
@@ -89,19 +96,21 @@ The card is not copied by HACS, because it lives outside the integration folder.
 
 ```yaml
 type: custom:tv-guide-epg-card
+```
+
+That is the whole configuration: the card finds this integration's sensors by itself (they are the
+only entities carrying both a `canale` and a `tipo` attribute) and orders channels by their
+national numbering. Everything else is optional:
+
+```yaml
+type: custom:tv-guide-epg-card
 title: UK Guide
-now_entity: sensor.guida_tv_ora_in_onda
-prime_entity: sensor.guida_tv_prima_serata
-channels:
+nazione: UK            # only needed when several countries are installed
+channels:              # restricts and reorders the channels shown
   - BBC One
   - BBC Two
   - ITV1
-  - Channel 4
 ```
-
-`now_entity` and `prime_entity` are required; `channels` picks and orders which channels to show
-(omit it and the card displays every channel present in the sensor data, in the order the
-integration provides). Point a second card at a second country's entities to show both.
 
 ## Favorite programs
 

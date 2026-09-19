@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Versione](https://img.shields.io/badge/versione-1.0.1-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Versione](https://img.shields.io/badge/versione-2.0.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![Licenza](https://img.shields.io/badge/licenza-MIT-green)](LICENSE)
 
 🇬🇧 [Read in English](README.md)
@@ -51,18 +51,20 @@ di dati sono stati volutamente esclusi. Altre nazioni potranno essere aggiunte i
 
 ## Cosa installa
 
-Per ogni istanza/nazione:
+**Due sensori per ogni canale**, così ogni canale è utilizzabile da solo in dashboard e automazioni:
 
 | Entità | Stato | Attributi |
 |---|---|---|
-| `<nome> - Ora in onda` | il programma del primo canale configurato | `programmi_correnti`: dizionario canale → dati del programma, più `nazione` e `fonte` |
-| `<nome> - Prima serata` | il programma serale del primo canale configurato | `prima_serata`: dizionario canale → dati del programma, più `nazione` e `fonte` |
+| `<canale> - Ora in onda` | titolo di cosa c'è ora su quel canale | `orario_inizio`, `orario_fine`, `genere`, `locandina`, `descrizione`, `canale`, `nazione`, `fonte`, `tipo`, `posizione` |
+| `<canale> - Prima serata` | titolo del programma di prima serata di quel canale | gli stessi di sopra |
 | `In onda: <preferito>` (uno per preferito configurato) | acceso se quel titolo è in onda ora, su uno dei canali dell'istanza | `canali`: dizionario canale → titolo |
 
-Ogni programma porta con sé `titolo`, `orario_inizio`, `orario_fine`, `genere`, `locandina` e
-`descrizione` (i campi che la fonte non pubblica restano vuoti). Le **chiavi** degli attributi sono
-in italiano per coerenza con gli altri progetti Home Assistant dell'autore; i **valori** sono nella
-lingua della nazione scelta.
+Sono quindi **18 entità per l'Italia** (9 canali), 10 per il Regno Unito e 12 a testa per Germania,
+Francia e Spagna, più una per ogni preferito. Un canale per cui la fonte non ha dati riporta
+`Nessun dato`.
+
+Le **chiavi** degli attributi sono in italiano per coerenza con gli altri progetti Home Assistant
+dell'autore; i **valori** sono nella lingua della nazione scelta.
 
 ## Installazione
 
@@ -76,6 +78,12 @@ lingua della nazione scelta.
 
 Aggiungi di nuovo l'integrazione per seguire una seconda nazione. Ogni nazione può essere aggiunta
 una sola volta.
+
+> **Aggiornamento dalla 1.x?** I due sensori aggregati (`<nome> - Ora in onda` e
+> `<nome> - Prima serata`, che tenevano tutti i canali negli attributi) non esistono più, sostituiti
+> da due sensori per canale. Elimina card o automazioni che li usavano, aggiorna la card alla
+> configurazione qui sotto, e rimuovi le due entità orfane da
+> **Impostazioni → Dispositivi e servizi → Entità**.
 
 ### 2. La card
 
@@ -91,19 +99,21 @@ La card non viene copiata da HACS, perché sta fuori dalla cartella dell'integra
 
 ```yaml
 type: custom:tv-guide-epg-card
-title: Guida UK
-now_entity: sensor.guida_tv_ora_in_onda
-prime_entity: sensor.guida_tv_prima_serata
-channels:
-  - BBC One
-  - BBC Two
-  - ITV1
-  - Channel 4
 ```
 
-`now_entity` e `prime_entity` sono obbligatori; `channels` sceglie e ordina i canali da mostrare
-(omettilo e la card mostra tutti i canali presenti nei dati dei sensori, nell'ordine fornito
-dall'integrazione). Punta una seconda card alle entità di un'altra nazione per vederle entrambe.
+Questa è tutta la configurazione: la card trova da sola i sensori dell'integrazione (sono gli unici
+con gli attributi `canale` e `tipo`) e ordina i canali secondo la numerazione nazionale. Tutto il
+resto è opzionale:
+
+```yaml
+type: custom:tv-guide-epg-card
+title: Guida TV
+nazione: IT            # serve solo se hai installato più nazioni
+channels:              # limita e riordina i canali mostrati
+  - Rai 1
+  - Rai 2
+  - La7
+```
 
 ## Programmi preferiti
 

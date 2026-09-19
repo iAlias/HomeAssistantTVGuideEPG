@@ -40,6 +40,11 @@ class EpgCoordinator(DataUpdateCoordinator[Tuple[Schedule, Schedule]]):
         )
         self._source = source
 
+    @property
+    def channels(self) -> list[str]:
+        """Channels this entry covers, in display order."""
+        return self._source.channels
+
     async def _async_update_data(self) -> Tuple[Schedule, Schedule]:
         previous = self.data
         now, prime = await self._source.get_schedules()

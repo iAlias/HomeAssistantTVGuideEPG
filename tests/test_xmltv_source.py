@@ -198,3 +198,20 @@ def test_refresh_interval_reflects_configured_minutes():
 def test_refresh_interval_defaults_to_two_hours():
     source = XmltvSource(session=None, url="https://example.com/epg.xml.gz", channel_order=[])
     assert source.refresh_interval == timedelta(minutes=120)
+
+
+def test_channels_are_the_display_names_in_order():
+    source = XmltvSource(
+        session=None,
+        url="https://example.com/epg.xml.gz",
+        channel_order=["BBC.One.Lon.HD.uk", "ITV1.HD.uk"],
+        channel_names={"BBC.One.Lon.HD.uk": "BBC One", "ITV1.HD.uk": "ITV1"},
+    )
+    assert source.channels == ["BBC One", "ITV1"]
+
+
+def test_channels_fall_back_to_the_raw_id_when_unnamed():
+    source = XmltvSource(
+        session=None, url="https://example.com/epg.xml.gz", channel_order=["Foo.uk"]
+    )
+    assert source.channels == ["Foo.uk"]

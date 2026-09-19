@@ -90,3 +90,26 @@ def test_poster_url_is_absolute_when_present():
 
 def test_refresh_interval_is_ten_minutes():
     assert SorrisiSource(session=None).refresh_interval == timedelta(minutes=10)
+
+
+def test_channels_are_declared_in_lcn_order():
+    assert SorrisiSource(session=None).channels == CHANNEL_ORDER
+
+
+def test_declared_channels_match_the_keys_the_parser_produces():
+    """The entities are keyed by these names, so the two must not drift apart.
+
+    sorrisi.com writes "La 7", "TV 8" and "Nove"; the parser canonicalises them
+    to the branded spellings declared in CHANNEL_ORDER. If that mapping broke,
+    every affected channel's sensor would sit permanently on "Nessun dato".
+    """
+    parsed = set(_parse_programs(ORA_IN_ONDA))
+    declared = set(SorrisiSource(session=None).channels)
+    assert parsed == declared
+
+
+def test_parser_canonicalises_channel_spelling():
+    result = _parse_programs(ORA_IN_ONDA)
+    assert "La7" in result and "La 7" not in result
+    assert "TV8" in result and "TV 8" not in result
+    assert "Nove" in result

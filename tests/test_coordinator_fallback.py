@@ -38,9 +38,14 @@ class _FakeEntry:
 class _FakeSource(ScheduleSource):
     """Returns a scripted sequence of (now, prime) results, one per call."""
 
-    def __init__(self, results, refresh_minutes: int = 10) -> None:
+    def __init__(self, results, refresh_minutes: int = 10, channels=("BBC One",)) -> None:
         self._results = list(results)
         self._refresh_minutes = refresh_minutes
+        self._channels = list(channels)
+
+    @property
+    def channels(self):
+        return list(self._channels)
 
     @property
     def refresh_interval(self) -> timedelta:
@@ -48,6 +53,13 @@ class _FakeSource(ScheduleSource):
 
     async def get_schedules(self):
         return self._results.pop(0)
+
+
+def test_coordinator_exposes_the_sources_channels():
+    """Entities are built from this list, so it must not depend on fetched data."""
+    source = _FakeSource([], channels=("BBC One", "ITV1"))
+    coordinator = EpgCoordinator(HomeAssistant(), _FakeEntry(), source)
+    assert coordinator.channels == ["BBC One", "ITV1"]
 
 
 def test_coordinator_takes_its_interval_from_the_source():

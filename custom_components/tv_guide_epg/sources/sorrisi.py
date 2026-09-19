@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta
 import logging
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import aiohttp
 import async_timeout
@@ -18,6 +18,9 @@ _LOGGER = logging.getLogger(__name__)
 URL_NOW = "https://www.sorrisi.com/guidatv/ora-in-tv/"
 URL_PRIME = "https://www.sorrisi.com/guidatv/stasera-in-tv/"
 
+# Italian LCN order. These spellings are also the display names: sorrisi.com
+# writes "La 7", "TV 8" and "Nove", but the channels brand themselves La7 and
+# TV8, so parsed names are canonicalised to the spellings below.
 CHANNEL_ORDER = [
     "Rai 1",
     "Rai 2",
@@ -27,7 +30,7 @@ CHANNEL_ORDER = [
     "Italia 1",
     "La7",
     "TV8",
-    "NOVE",
+    "Nove",
 ]
 
 SKIP_CHANNELS = {"IRIS", "CANALE20", "20", "20MEDIASET", "RAI4"}
@@ -45,6 +48,12 @@ def _normalize(channel: str) -> str:
 
 
 CHANNEL_ORDER_KEYS = [_normalize(name) for name in CHANNEL_ORDER]
+CANONICAL_NAMES = {_normalize(name): name for name in CHANNEL_ORDER}
+
+
+def _canonical(channel: str) -> str:
+    """Return the branded spelling for a known channel, else the site's own."""
+    return CANONICAL_NAMES.get(_normalize(channel), channel)
 
 
 async def _fetch_page(session: aiohttp.ClientSession, url: str) -> str:
@@ -116,7 +125,7 @@ def _parse_programs(html: str) -> Schedule:
         if _normalize(channel) in SKIP_CHANNELS:
             continue
 
-        mapping[channel.strip()] = {
+        mapping[_canonical(channel.strip())] = {
             "titolo": title_el.get_text(strip=True),
             "orario_inizio": _extract_start_time(article),
             "orario_fine": _extract_end_time(article),
@@ -140,6 +149,10 @@ class SorrisiSource(ScheduleSource):
 
     def __init__(self, session: aiohttp.ClientSession) -> None:
         self._session = session
+
+    @property
+    def channels(self) -> List[str]:
+        return list(CHANNEL_ORDER)
 
     @property
     def refresh_interval(self) -> timedelta:

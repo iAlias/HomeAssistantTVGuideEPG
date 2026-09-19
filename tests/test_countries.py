@@ -67,3 +67,17 @@ def test_uk_uses_the_channel_five_variant_that_has_data():
     source = COUNTRIES["UK"].make_source(None, None)
     assert "Channel.5.HD.uk" in source._channel_order
     assert "Channel.5.uk" not in source._channel_order
+
+
+def test_every_country_declares_its_channels():
+    for code, config in COUNTRIES.items():
+        channels = config.make_source(None, None).channels
+        assert channels, f"{code} declares no channels"
+        assert len(channels) == len(set(channels)), f"{code} has duplicate channel names"
+
+
+def test_channel_counts_match_the_documented_entity_totals():
+    """Two sensors per channel: 18 for Italy, 10 for the UK, 12 for the others."""
+    expected = {"IT": 9, "UK": 5, "DE": 6, "FR": 6, "ES": 6}
+    actual = {code: len(cfg.make_source(None, None).channels) for code, cfg in COUNTRIES.items()}
+    assert actual == expected
