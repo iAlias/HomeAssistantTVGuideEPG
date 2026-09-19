@@ -42,6 +42,16 @@ def test_setup_serves_the_card_and_loads_it_on_every_dashboard():
     assert CARD.name in source
 
 
+def test_registration_is_idempotent_and_also_runs_on_reload():
+    """Reloading the config entry must be enough to get the card in place,
+    and a second call must not try to register the same static path twice."""
+    source = (COMPONENT / "__init__.py").read_text("utf-8")
+    assert source.count("_async_register_card(hass)") == 2, (
+        "expected the registration helper in both async_setup and async_setup_entry"
+    )
+    assert "if hass.data.get(_CARD_REGISTERED):" in source
+
+
 def test_the_card_registers_itself_in_the_picker():
     source = CARD.read_text("utf-8")
     assert 'customElements.define("tv-guide-epg-card"' in source

@@ -24,19 +24,36 @@ CARD_URL_PATH = f"/{DOMAIN}"
 CARD_FILENAME = "tv-guide-epg-card.js"
 CARD_JS_URL = f"{CARD_URL_PATH}/{CARD_FILENAME}"
 CARD_DIR = Path(__file__).parent / "frontend"
+_CARD_REGISTERED = f"{DOMAIN}_card_registered"
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Serve the Lovelace card and register it as a frontend module."""
+async def _async_register_card(hass: HomeAssistant) -> None:
+    """Serve the card once per Home Assistant run, and load it everywhere.
+
+    Called from both ``async_setup`` and ``async_setup_entry``: Home Assistant
+    only runs ``async_setup`` when the component is first set up, so a plain
+    "reload" of the config entry — the reflex after updating the integration —
+    would otherwise leave the card unregistered until the next full restart.
+    """
+    if hass.data.get(_CARD_REGISTERED):
+        return
+    hass.data[_CARD_REGISTERED] = True
     await hass.http.async_register_static_paths(
         [StaticPathConfig(CARD_URL_PATH, str(CARD_DIR), cache_headers=False)]
     )
     add_extra_js_url(hass, CARD_JS_URL)
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Serve the Lovelace card and register it as a frontend module."""
+    await _async_register_card(hass)
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TV Guide EPG from a config entry (one country per entry)."""
+    await _async_register_card(hass)
+
     session = async_get_clientsession(hass)
     country_code = entry.data[CONF_COUNTRY]
     source = COUNTRIES[country_code].make_source(
