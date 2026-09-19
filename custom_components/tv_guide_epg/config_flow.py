@@ -58,25 +58,26 @@ class TvGuideEpgOptionsFlow(OptionsFlow):
     """Favorite programs, plus the poll interval for XMLTV-backed countries."""
 
     def __init__(self, config_entry: ConfigEntry) -> None:
-        # Explicit assignment (rather than relying on the base class) keeps this
-        # working on HA versions older than the 2024.11 auto-injection, matching
-        # the 2024.1.0 minimum declared in hacs.json.
-        self.config_entry = config_entry
+        # Kept under a private name on purpose: since 2024.11 Home Assistant
+        # injects `config_entry` itself and exposes it as a read-only property,
+        # so assigning to it raises AttributeError on current versions. A
+        # private reference works on every version in our supported range.
+        self._entry = config_entry
 
     async def async_step_init(self, user_input: dict | None = None):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        country = COUNTRIES[self.config_entry.data[CONF_COUNTRY]]
+        country = COUNTRIES[self._entry.data[CONF_COUNTRY]]
         schema_dict = {
             vol.Optional(
                 CONF_FAVORITES,
-                default=self.config_entry.options.get(CONF_FAVORITES, ""),
+                default=self._entry.options.get(CONF_FAVORITES, ""),
             ): str
         }
 
         if country.configurable_interval:
-            current = self.config_entry.options.get(
+            current = self._entry.options.get(
                 CONF_REFRESH_MINUTES, DEFAULT_REFRESH_MINUTES
             )
             schema_dict[vol.Optional(CONF_REFRESH_MINUTES, default=current)] = vol.In(
