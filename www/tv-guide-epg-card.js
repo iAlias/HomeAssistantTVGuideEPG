@@ -17,6 +17,11 @@ class TvGuideEpgCard extends HTMLElement {
     this._last = null;
   }
 
+  /** Config used when the card is added from the dashboard picker. */
+  static getStubConfig(){
+    return {type: "custom:tv-guide-epg-card", title: "Guida TV"};
+  }
+
   setConfig(cfg){
     this._cfg = {
       show_refresh: true,
@@ -179,3 +184,14 @@ class TvGuideEpgCard extends HTMLElement {
 }
 
 customElements.define("tv-guide-epg-card", TvGuideEpgCard);
+
+// Without this the card never shows up under "Add card", so it looks as though
+// a guide has to be assembled entity by entity from a generic entities card.
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "tv-guide-epg-card",
+  name: "Guida TV EPG",
+  description: "Palinsesto completo: cosa c'è ora in onda e in prima serata su ogni canale. Nessuna configurazione richiesta.",
+  preview: true,
+  documentationURL: "https://github.com/iAlias/HomeAssistantTVGuideEPG",
+});
