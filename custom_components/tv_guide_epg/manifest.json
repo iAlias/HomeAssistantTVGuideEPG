@@ -1,0 +1,16 @@
+{
+  "domain": "tv_guide_epg",
+  "name": "TV Guide EPG",
+  "codeowners": ["@iAlias"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/iAlias/HomeAssistantTVGuideEPG",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/iAlias/HomeAssistantTVGuideEPG/issues",
+  "requirements": [
+    "aiohttp>=3.8.4",
+    "async_timeout>=4.0.3",
+    "beautifulsoup4>=4.12.3"
+  ],
+  "version": "1.0.0"
+}
