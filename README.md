@@ -6,7 +6,7 @@
 
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2024.1%2B-41bdf5)](https://www.home-assistant.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -157,7 +157,7 @@ Home Assistant installation required.
 
 ## Requirements
 
-- Home Assistant **2024.1.0** or newer
+- Home Assistant **2025.1.0** or newer
 - Outbound internet access to `sorrisi.com` (Italy) and/or `epgshare01.online` (other countries)
 - [HACS](https://hacs.xyz/) (optional, for one-click updates) or manual installation
 

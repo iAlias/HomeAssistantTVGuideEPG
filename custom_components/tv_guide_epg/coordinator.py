@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Optional, Tuple
 
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -27,11 +28,14 @@ def _merge_with_previous(current: Schedule, previous: Optional[Schedule]) -> Sch
 class EpgCoordinator(DataUpdateCoordinator[Tuple[Schedule, Schedule]]):
     """Refreshes both schedules together, at the cadence the source asks for."""
 
-    def __init__(self, hass: HomeAssistant, source: ScheduleSource) -> None:
+    def __init__(
+        self, hass: HomeAssistant, entry: ConfigEntry, source: ScheduleSource
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
             name="TV Guide EPG",
+            config_entry=entry,
             update_interval=source.refresh_interval,
         )
         self._source = source

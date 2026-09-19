@@ -35,6 +35,7 @@ def _install_stub_homeassistant() -> None:
 
     modules = {name: types.ModuleType(name) for name in (
         "homeassistant",
+        "homeassistant.config_entries",
         "homeassistant.core",
         "homeassistant.helpers",
         "homeassistant.helpers.update_coordinator",
@@ -44,8 +45,9 @@ def _install_stub_homeassistant() -> None:
         pass
 
     class DataUpdateCoordinator(_GenericStub):
-        def __init__(self, hass, logger, *, name=None, update_interval=None):
+        def __init__(self, hass, logger, *, name=None, config_entry=None, update_interval=None):
             self.data = None
+            self.config_entry = config_entry
             self.update_interval = update_interval
 
         async def async_refresh(self):
@@ -54,6 +56,10 @@ def _install_stub_homeassistant() -> None:
         async def async_config_entry_first_refresh(self):
             self.data = await self._async_update_data()
 
+    class ConfigEntry:
+        pass
+
+    modules["homeassistant.config_entries"].ConfigEntry = ConfigEntry
     modules["homeassistant.core"].HomeAssistant = HomeAssistant
     modules["homeassistant.helpers.update_coordinator"].DataUpdateCoordinator = DataUpdateCoordinator
 

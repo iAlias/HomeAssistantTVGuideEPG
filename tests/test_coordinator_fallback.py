@@ -29,6 +29,12 @@ def test_merge_with_previous_returns_empty_when_nothing_to_fall_back_to():
     assert _merge_with_previous({}, {}) == {}
 
 
+class _FakeEntry:
+    """Stand-in for the config entry the coordinator is bound to."""
+
+    entry_id = "test-entry"
+
+
 class _FakeSource(ScheduleSource):
     """Returns a scripted sequence of (now, prime) results, one per call."""
 
@@ -45,7 +51,7 @@ class _FakeSource(ScheduleSource):
 
 
 def test_coordinator_takes_its_interval_from_the_source():
-    coordinator = EpgCoordinator(HomeAssistant(), _FakeSource([], refresh_minutes=240))
+    coordinator = EpgCoordinator(HomeAssistant(), _FakeEntry(), _FakeSource([], refresh_minutes=240))
     assert coordinator.update_interval == timedelta(minutes=240)
 
 
@@ -56,7 +62,7 @@ def test_coordinator_falls_back_to_last_good_schedule_on_empty_refresh():
         (good_now, good_prime),
         ({}, {}),  # simulates the source changing shape or going down
     ])
-    coordinator = EpgCoordinator(HomeAssistant(), source)
+    coordinator = EpgCoordinator(HomeAssistant(), _FakeEntry(), source)
 
     asyncio.run(coordinator.async_refresh())
     assert coordinator.data == (good_now, good_prime)
@@ -74,7 +80,7 @@ def test_coordinator_adopts_new_data_once_source_recovers():
         ({}, {}),
         (new_now, good_prime),
     ])
-    coordinator = EpgCoordinator(HomeAssistant(), source)
+    coordinator = EpgCoordinator(HomeAssistant(), _FakeEntry(), source)
 
     for _ in range(3):
         asyncio.run(coordinator.async_refresh())
@@ -91,7 +97,7 @@ def test_coordinator_keeps_each_schedule_independently():
         (good_now, good_prime),
         (new_now, {}),  # prime went missing, now is fine
     ])
-    coordinator = EpgCoordinator(HomeAssistant(), source)
+    coordinator = EpgCoordinator(HomeAssistant(), _FakeEntry(), source)
 
     asyncio.run(coordinator.async_refresh())
     asyncio.run(coordinator.async_refresh())

@@ -51,33 +51,29 @@ class TvGuideEpgConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry) -> "TvGuideEpgOptionsFlow":
-        return TvGuideEpgOptionsFlow(config_entry)
+        return TvGuideEpgOptionsFlow()
 
 
 class TvGuideEpgOptionsFlow(OptionsFlow):
     """Favorite programs, plus the poll interval for XMLTV-backed countries."""
 
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        # Kept under a private name on purpose: since 2024.11 Home Assistant
-        # injects `config_entry` itself and exposes it as a read-only property,
-        # so assigning to it raises AttributeError on current versions. A
-        # private reference works on every version in our supported range.
-        self._entry = config_entry
+    # No __init__: Home Assistant injects `config_entry` itself and exposes it
+    # as a read-only property, so assigning to it would raise AttributeError.
 
     async def async_step_init(self, user_input: dict | None = None):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        country = COUNTRIES[self._entry.data[CONF_COUNTRY]]
+        country = COUNTRIES[self.config_entry.data[CONF_COUNTRY]]
         schema_dict = {
             vol.Optional(
                 CONF_FAVORITES,
-                default=self._entry.options.get(CONF_FAVORITES, ""),
+                default=self.config_entry.options.get(CONF_FAVORITES, ""),
             ): str
         }
 
         if country.configurable_interval:
-            current = self._entry.options.get(
+            current = self.config_entry.options.get(
                 CONF_REFRESH_MINUTES, DEFAULT_REFRESH_MINUTES
             )
             schema_dict[vol.Optional(CONF_REFRESH_MINUTES, default=current)] = vol.In(
