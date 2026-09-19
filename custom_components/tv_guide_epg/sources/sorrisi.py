@@ -33,6 +33,20 @@ CHANNEL_ORDER = [
 SKIP_CHANNELS = {"IRIS", "CANALE20", "20", "20MEDIASET", "RAI4"}
 
 
+def _normalize(channel: str) -> str:
+    """Key used to match a channel name regardless of spacing or case.
+
+    sorrisi.com is not consistent about this: the same channels appear as
+    "La 7", "Nove" and "TV 8" on the page while being commonly written La7,
+    NOVE and TV8. Comparing raw names left those three unmatched, so they fell
+    out of the LCN ordering and got sorted alphabetically at the end.
+    """
+    return channel.upper().replace(" ", "")
+
+
+CHANNEL_ORDER_KEYS = [_normalize(name) for name in CHANNEL_ORDER]
+
+
 async def _fetch_page(session: aiohttp.ClientSession, url: str) -> str:
     try:
         async with async_timeout.timeout(15):
@@ -99,8 +113,7 @@ def _parse_programs(html: str) -> Schedule:
         if not (channel and title_el):
             continue
 
-        key = channel.upper().replace(" ", "")
-        if key in SKIP_CHANNELS:
+        if _normalize(channel) in SKIP_CHANNELS:
             continue
 
         mapping[channel.strip()] = {
@@ -114,9 +127,9 @@ def _parse_programs(html: str) -> Schedule:
 
     def sort_key(item):
         try:
-            idx = CHANNEL_ORDER.index(item[0])
+            idx = CHANNEL_ORDER_KEYS.index(_normalize(item[0]))
         except ValueError:
-            idx = len(CHANNEL_ORDER)
+            idx = len(CHANNEL_ORDER_KEYS)
         return idx, item[0]
 
     return dict(sorted(mapping.items(), key=sort_key))

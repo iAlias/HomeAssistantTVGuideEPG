@@ -10,8 +10,10 @@ from pathlib import Path
 
 from custom_components.tv_guide_epg.sources.sorrisi import (
     CHANNEL_ORDER,
+    CHANNEL_ORDER_KEYS,
     SKIP_CHANNELS,
     SorrisiSource,
+    _normalize,
     _parse_programs,
 )
 
@@ -26,10 +28,29 @@ def test_parses_known_channel_from_ora_in_onda():
     assert result["Rai 1"]["titolo"]
 
 
-def test_orders_known_channels_by_channel_order():
+def test_every_parsed_channel_is_recognised_by_the_lcn_order():
+    """Guards the spacing/case mismatch that silently broke the ordering.
+
+    sorrisi.com writes "La 7", "Nove" and "TV 8"; CHANNEL_ORDER lists La7, TV8
+    and NOVE. Matching raw names left those three unrecognised, and the earlier
+    version of this test missed it by only checking channels that already
+    matched.
+    """
     result = _parse_programs(ORA_IN_ONDA)
-    known = [channel for channel in result if channel in CHANNEL_ORDER]
-    assert known == sorted(known, key=CHANNEL_ORDER.index)
+    unrecognised = [ch for ch in result if _normalize(ch) not in CHANNEL_ORDER_KEYS]
+    assert unrecognised == []
+
+
+def test_orders_channels_by_italian_lcn_numbering():
+    result = _parse_programs(ORA_IN_ONDA)
+    positions = [CHANNEL_ORDER_KEYS.index(_normalize(ch)) for ch in result]
+    assert positions == sorted(positions)
+
+
+def test_la7_tv8_and_nove_come_after_italia_1():
+    """The three channels whose names differ from their common spelling."""
+    order = [_normalize(ch) for ch in _parse_programs(ORA_IN_ONDA)]
+    assert order.index("ITALIA1") < order.index("LA7") < order.index("TV8") < order.index("NOVE")
 
 
 def test_excludes_skip_channels():
