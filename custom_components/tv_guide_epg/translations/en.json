@@ -1,0 +1,29 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TV Guide EPG",
+        "description": "Choose the country whose schedule you want. You can add the integration multiple times, one per country.",
+        "data": {
+          "nazione": "Country",
+          "name": "Name"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This country is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Favorites and refresh",
+        "description": "Favorite titles (partial matches are fine, comma-separated) and, for XMLTV-based countries, how often to download the schedule.",
+        "data": {
+          "preferiti": "Favorite titles",
+          "intervallo_aggiornamento": "Refresh interval"
+        }
+      }
+    }
+  }
+}
