@@ -13,14 +13,39 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const cardSource = readFileSync(path.join(here, "..", "..", "www", "tv-guide-epg-card.js"), "utf8");
+const cardSource = readFileSync(
+  path.join(
+    here,
+    "..",
+    "..",
+    "custom_components",
+    "tv_guide_epg",
+    "frontend",
+    "tv-guide-epg-card.js",
+  ),
+  "utf8",
+);
 
-// Minimal browser surface the card touches at load time.
+// Minimal browser surface the card touches at load time. `defining` and
+// `defined` model the real registry so loading the file twice (the manual
+// /local/ resource and the auto-loaded module) is exercised below.
+const defining = new Set();
 globalThis.HTMLElement = class {};
-globalThis.customElements = { define() {} };
+globalThis.customElements = {
+  define(name) {
+    defining.add(name);
+  },
+  get(name) {
+    return defining.has(name) ? class {} : undefined;
+  },
+};
 globalThis.window = globalThis;
 
-const TvGuideEpgCard = new Function(`${cardSource}\nreturn TvGuideEpgCard;`)();
+function loadCard() {
+  return new Function(`${cardSource}\nreturn TvGuideEpgCard;`)();
+}
+
+const TvGuideEpgCard = loadCard();
 
 function sensor(canale, tipo, titolo, {nazione = "IT", posizione = 1, ...rest} = {}) {
   return {
@@ -116,10 +141,17 @@ test("carries the programme details the card renders", () => {
   });
 });
 
-test("registers itself in the dashboard card picker", () => {
-  assert.ok(
-    (globalThis.window.customCards || []).some((c) => c.type === "tv-guide-epg-card"),
-    "the card must appear under 'Add card', otherwise it can only be added as raw YAML",
+test("registers itself in the dashboard card picker, and survives a double load", () => {
+  assert.deepEqual([...defining], ["tv-guide-epg-card"]);
+
+  // An upgrade can leave the old manual /local/ resource in place: loading the
+  // file twice must not throw a duplicate-definition error nor list it twice.
+  assert.doesNotThrow(() => loadCard());
+  assert.deepEqual([...defining], ["tv-guide-epg-card"]);
+  assert.equal(
+    (globalThis.window.customCards || []).filter((c) => c.type === "tv-guide-epg-card").length,
+    1,
+    "the card must appear exactly once under 'Add card'",
   );
 });
 

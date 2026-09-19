@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Versione](https://img.shields.io/badge/versione-2.0.1-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Versione](https://img.shields.io/badge/versione-2.1.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![Licenza](https://img.shields.io/badge/licenza-MIT-green)](LICENSE)
 
 🇬🇧 [Read in English](README.md)
@@ -16,7 +16,8 @@ Scegli la nazione quando aggiungi l'integrazione, e puoi aggiungerla di nuovo pe
 seconda. L'Italia è servita da uno scraper dedicato, in uso dal 2025; le altre nazioni condividono
 un unico lettore XMLTV generico. Ogni istanza espone sensori "ora in onda" e "prima serata",
 sensori binari opzionali sui programmi preferiti, e una card Lovelace che li mostra come una guida
-vera.
+vera. La card si installa insieme all'integrazione e si registra da sola nel selettore
+**Aggiungi card**.
 
 ---
 
@@ -87,13 +88,16 @@ una sola volta.
 
 ### 2. La card
 
-La card non viene copiata da HACS, perché sta fuori dalla cartella dell'integrazione.
+La card viaggia dentro l'integrazione ed è Home Assistant stesso a servirla: appena configuri una
+istanza, l'integrazione la registra come modulo frontend e **Guida TV EPG** compare in
+**Aggiungi card** con l'anteprima. Niente da copiare in `config/www`, nessuna risorsa da aggiungere
+a mano.
 
-1. Copia `www/tv-guide-epg-card.js` dentro la tua cartella `config/www/`
-2. **Impostazioni → Dashboard → menù in alto a destra → Risorse → Aggiungi risorsa**
-   - URL: `/local/tv-guide-epg-card.js`
-   - Tipo: **Modulo JavaScript**
-3. Ricarica la pagina con Ctrl+F5
+Se in passato avevi installato la card manualmente (una risorsa `/local/tv-guide-epg-card.js`
+collegata a una copia in `config/www/`), elimina quella risorsa e il file: ora è superflua e
+caricherebbe una versione vecchia della card.
+
+Dopo l'aggiornamento ricarica il browser una volta con Ctrl+F5.
 
 ## Configurazione della card
 

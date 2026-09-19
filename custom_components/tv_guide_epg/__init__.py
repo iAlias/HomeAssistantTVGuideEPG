@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -11,6 +15,24 @@ from .coordinator import EpgCoordinator
 from .countries import COUNTRIES
 
 PLATFORMS = ["sensor", "binary_sensor"]
+
+# The card ships inside the integration folder, so it is served by Home
+# Assistant itself and loaded on every dashboard. That way it shows up under
+# "Add card" as soon as an instance is configured, with no copy into
+# config/www and no manually added Lovelace resource.
+CARD_URL_PATH = f"/{DOMAIN}"
+CARD_FILENAME = "tv-guide-epg-card.js"
+CARD_JS_URL = f"{CARD_URL_PATH}/{CARD_FILENAME}"
+CARD_DIR = Path(__file__).parent / "frontend"
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Serve the Lovelace card and register it as a frontend module."""
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(CARD_URL_PATH, str(CARD_DIR), cache_headers=False)]
+    )
+    add_extra_js_url(hass, CARD_JS_URL)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

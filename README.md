@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-2.0.1-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.1.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇮🇹 [Leggi in italiano](README.it.md)
@@ -15,7 +15,8 @@
 You pick a country when you add the integration, and can add it again for a second one.
 Italy is served by a dedicated scraper that has been in use since 2025; the other countries share
 one generic XMLTV reader. Each instance exposes "on now" and "prime time" sensors, optional
-favorite-program binary sensors, and a Lovelace card that renders them as a real guide.
+favorite-program binary sensors, and a Lovelace card that renders them as a real guide. The card is
+installed with the integration and registers itself in the dashboard's **Add card** picker.
 
 ---
 
@@ -84,13 +85,15 @@ Add the integration again to follow a second country. Each country can only be a
 
 ### 2. The card
 
-The card is not copied by HACS, because it lives outside the integration folder.
+The card ships inside the integration and Home Assistant serves it itself: as soon as one instance
+is configured, the integration registers it as a frontend module and **Guida TV EPG** appears in
+**Add card** with a preview. Nothing to copy into `config/www`, no resource to add by hand.
 
-1. Copy `www/tv-guide-epg-card.js` into your `config/www/` folder
-2. **Settings → Dashboards → top-right menu → Resources → Add resource**
-   - URL: `/local/tv-guide-epg-card.js`
-   - Type: **JavaScript module**
-3. Reload the page with Ctrl+F5
+If you installed the card manually in the past (a `/local/tv-guide-epg-card.js` resource pointing
+at a copy in `config/www/`), delete that resource and the file: it is now redundant and would
+otherwise load an outdated copy of the card.
+
+After upgrading, reload the browser once with Ctrl+F5.
 
 ## Card configuration
 

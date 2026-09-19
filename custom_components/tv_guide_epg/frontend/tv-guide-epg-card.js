@@ -183,15 +183,22 @@ class TvGuideEpgCard extends HTMLElement {
   getCardSize(){ return 3; }
 }
 
-customElements.define("tv-guide-epg-card", TvGuideEpgCard);
+// The integration ships and auto-loads this file, but someone upgrading from a
+// version where the card was a manual /local/ resource may still have it loaded
+// twice: defining the same element again throws and would break the page.
+if(!customElements.get("tv-guide-epg-card")){
+  customElements.define("tv-guide-epg-card", TvGuideEpgCard);
+}
 
 // Without this the card never shows up under "Add card", so it looks as though
 // a guide has to be assembled entity by entity from a generic entities card.
 window.customCards = window.customCards || [];
-window.customCards.push({
-  type: "tv-guide-epg-card",
-  name: "Guida TV EPG",
-  description: "Palinsesto completo: cosa c'è ora in onda e in prima serata su ogni canale. Nessuna configurazione richiesta.",
-  preview: true,
-  documentationURL: "https://github.com/iAlias/HomeAssistantTVGuideEPG",
-});
+if(!window.customCards.some((card) => card.type === "tv-guide-epg-card")){
+  window.customCards.push({
+    type: "tv-guide-epg-card",
+    name: "Guida TV EPG",
+    description: "Palinsesto completo: cosa c'è ora in onda e in prima serata su ogni canale. Nessuna configurazione richiesta.",
+    preview: true,
+    documentationURL: "https://github.com/iAlias/HomeAssistantTVGuideEPG",
+  });
+}
