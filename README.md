@@ -12,9 +12,9 @@
 
 🇮🇹 [Leggi in italiano](README.it.md)
 
-A sibling project to [TV Guide Multi-Source](https://github.com/iAlias/HomeAssistantTVGuide)
-(Italy only), covering several countries. You pick a country when you add the integration, and can
-add it again for a second one. Each instance exposes "on now" and "prime time" sensors, optional
+You pick a country when you add the integration, and can add it again for a second one.
+Italy is served by a dedicated scraper that has been in use since 2025; the other countries share
+one generic XMLTV reader. Each instance exposes "on now" and "prime time" sensors, optional
 favorite-program binary sensors, and a Lovelace card that renders them as a real guide.
 
 ---

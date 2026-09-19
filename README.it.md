@@ -12,9 +12,9 @@
 
 🇬🇧 [Read in English](README.md)
 
-Un progetto gemello di [TV Guide Multi-Source](https://github.com/iAlias/HomeAssistantTVGuide)
-(solo Italia), che copre più nazioni. Scegli la nazione quando aggiungi l'integrazione, e puoi
-aggiungerla di nuovo per una seconda. Ogni istanza espone sensori "ora in onda" e "prima serata",
+Scegli la nazione quando aggiungi l'integrazione, e puoi aggiungerla di nuovo per una
+seconda. L'Italia è servita da uno scraper dedicato, in uso dal 2025; le altre nazioni condividono
+un unico lettore XMLTV generico. Ogni istanza espone sensori "ora in onda" e "prima serata",
 sensori binari opzionali sui programmi preferiti, e una card Lovelace che li mostra come una guida
 vera.
 
