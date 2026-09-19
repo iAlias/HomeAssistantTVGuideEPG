@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Trimmed excerpt mirroring the quirks of the real epgshare01.online ES1 feed
+  (verified 2026-09-19): timestamps carry a +0200 offset rather than UTC, many
+  programmes have no <category>, and the feed contains zero-length entries
+  (start == stop) that can never be on air. One of each is reproduced here.
+-->
+<tv generator-info-name="none" generator-info-url="none">
+  <channel id="La.1.es">
+    <display-name lang="es">La 1</display-name>
+  </channel>
+  <programme start="20260919150000 +0200" stop="20260919160000 +0200" channel="La.1.es">
+    <title lang="es">Telediario</title>
+    <desc lang="es">Informativo de sobremesa.</desc>
+  </programme>
+  <programme start="20260919210000 +0200" stop="20260919223000 +0200" channel="La.1.es">
+    <title lang="es">Prima serata spagnola</title>
+    <desc lang="es">El programa de máxima audiencia.</desc>
+  </programme>
+  <programme start="20260919230000 +0200" stop="20260920003000 +0200" channel="La.1.es">
+    <title lang="es">Programa de medianoche</title>
+  </programme>
+  <programme start="20260919233000 +0200" stop="20260919233000 +0200" channel="La.1.es">
+    <title lang="es">Entrata a durata zero</title>
+  </programme>
+</tv>

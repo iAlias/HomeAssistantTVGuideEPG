@@ -125,9 +125,17 @@ orario iniettato) quale programma è "in onda ora" (orario corrente tra `start` 
 di "prima serata", per ciascun canale in `channel_order`.
 
 Dettagli che evitano ambiguità in fase di implementazione:
-- Gli orari XMLTV (`start`/`stop`) includono già l'offset UTC esplicito (es. `20260918002500 +0000`
-  nella fixture UK scaricata): il confronto con "ora" e "21:00" usa quell'offset così come
-  pubblicato dalla fonte, senza fare affidamento sul fuso orario configurato in Home Assistant.
+- **Correzione rispetto al design iniziale (applicata in implementazione).** L'idea iniziale era di
+  usare l'offset pubblicato dalla fonte così com'è. La verifica sui file reali l'ha smentita: il
+  feed UK pubblica `+0000` tutto l'anno (un'ora indietro rispetto all'ora civile britannica
+  d'estate) e quello spagnolo mischia `+0200` e `+0000`. Ogni nazione dichiara quindi il proprio
+  **fuso civile IANA** (`Europe/London`, `Europe/Berlin`, `Europe/Paris`, `Europe/Madrid`), usato
+  sia per mostrare gli orari sia per individuare la prima serata; se il database dei fusi non è
+  disponibile si ricade sull'offset della fonte. Senza questa correzione la prima serata spagnola
+  cadeva alle 23:00 locali.
+- I feed contengono voci a **durata zero** (`start == stop`: 541 nel file spagnolo, 104 in quello
+  francese): non possono mai risultare "in onda" e sporcherebbero la scelta della prima serata,
+  quindi vengono scartate in fase di parsing.
 - "Prima serata" è semplificata a un orario fisso, le **21:00** nell'offset della fonte, uguale per
   tutte le nazioni — una semplificazione nota (la prima serata "reale" varia per paese, es. più
   tardi in Spagna), accettabile per la v1 e facile da rendere configurabile in futuro se serve.

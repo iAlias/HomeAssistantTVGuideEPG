@@ -4,7 +4,7 @@ Adding a country means adding one entry here — either reusing ``XmltvSource``
 with an epgshare01.online tag and channel list, or pointing at a bespoke
 ``ScheduleSource`` when the country has no usable XMLTV feed (as with Italy).
 
-Every channel id below was verified against the real feed on 2026-09-19: ids
+Every channel id below was verified against the live feed on 2026-09-19: ids
 that exist in the channel list but carry no programmes (``Channel.5.uk`` was
 one) are deliberately excluded in favour of the variant that has data.
 """
@@ -34,11 +34,13 @@ class CountryConfig:
     make_source: SourceFactory
 
 
-def _xmltv_factory(tag: str, channels: Dict[str, str]) -> SourceFactory:
+def _xmltv_factory(tag: str, timezone_name: str, channels: Dict[str, str]) -> SourceFactory:
     """Build a factory for an epgshare01.online country.
 
     ``channels`` maps the feed's channel id to the display name shown to the
     user, and its order is the order channels appear in the sensors.
+    ``timezone_name`` is the country's civil timezone, used to render times and
+    to locate prime time — the feeds' own offsets do not reliably match it.
     """
     channel_order: List[str] = list(channels)
 
@@ -48,6 +50,7 @@ def _xmltv_factory(tag: str, channels: Dict[str, str]) -> SourceFactory:
             url=EPGSHARE01_URL.format(tag=tag),
             channel_order=channel_order,
             channel_names=dict(channels),
+            timezone_name=timezone_name,
             refresh_minutes=minutes or 120,
         )
 
@@ -63,7 +66,7 @@ COUNTRIES: Dict[str, CountryConfig] = {
     "UK": CountryConfig(
         name="Regno Unito",
         configurable_interval=True,
-        make_source=_xmltv_factory("UK1", {
+        make_source=_xmltv_factory("UK1", "Europe/London", {
             "BBC.One.Lon.HD.uk": "BBC One",
             "BBC.Two.HD.uk": "BBC Two",
             "ITV1.HD.uk": "ITV1",
@@ -74,7 +77,7 @@ COUNTRIES: Dict[str, CountryConfig] = {
     "DE": CountryConfig(
         name="Germania",
         configurable_interval=True,
-        make_source=_xmltv_factory("DE1", {
+        make_source=_xmltv_factory("DE1", "Europe/Berlin", {
             "Das.Erste.de": "Das Erste",
             "ZDF.de": "ZDF",
             "RTL.de": "RTL",
@@ -86,7 +89,7 @@ COUNTRIES: Dict[str, CountryConfig] = {
     "FR": CountryConfig(
         name="Francia",
         configurable_interval=True,
-        make_source=_xmltv_factory("FR1", {
+        make_source=_xmltv_factory("FR1", "Europe/Paris", {
             "TF1.fr": "TF1",
             "France.2.fr": "France 2",
             "France.3.fr": "France 3",
@@ -98,7 +101,7 @@ COUNTRIES: Dict[str, CountryConfig] = {
     "ES": CountryConfig(
         name="Spagna",
         configurable_interval=True,
-        make_source=_xmltv_factory("ES1", {
+        make_source=_xmltv_factory("ES1", "Europe/Madrid", {
             "La.1.es": "La 1",
             "La.2.es": "La 2",
             "Antena.3.es": "Antena 3",
