@@ -79,15 +79,20 @@ class TvGuideEpgCard extends HTMLElement {
 
       const style = document.createElement("style");
       style.textContent = `
-        .tvg-body{padding:16px;display:grid;row-gap:16px;overflow:hidden}
+        /* minmax(0,1fr) is the load-bearing part: grid items, like flex items,
+           default to min-width:auto and refuse to shrink below their content,
+           so the programme list sized itself to its longest title and pushed
+           past the card in a narrow dashboard column. */
+        .tvg-body{padding:16px;display:grid;grid-template-columns:minmax(0,1fr);row-gap:16px;overflow:hidden}
+        .tvg-body > *{min-width:0}
         .tvg-toolbar{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid var(--divider-color)}
         .tvg-btn{padding:.35rem .75rem;border:1px solid var(--primary-color);background:transparent;border-radius:999px;cursor:pointer}
         .tvg-btn[disabled]{opacity:.6;cursor:not-allowed}
         .tvg-meta{font-size:.85rem;opacity:.75}
         .tvg-empty{padding:16px;opacity:.7}
         h3{margin:0 0 8px;font-size:1rem;font-weight:500}
-        ul{list-style:none;margin:0;padding:0}
-        li{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--divider-color);padding:4px 0}
+        ul{list-style:none;margin:0;padding:0;min-width:0}
+        li{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--divider-color);padding:4px 0;min-width:0}
         /* Flex children default to min-width:auto and refuse to shrink below
            their content, so long programme titles used to spill outside the
            card in a narrow dashboard column. */
@@ -97,7 +102,7 @@ class TvGuideEpgCard extends HTMLElement {
         .tvg-ch-text{display:flex;flex-direction:column;overflow:hidden}
         .tvg-ch-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .tvg-ch-meta{font-size:.75rem;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-        .val{font-weight:500;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto;text-align:right}
+        .val{font-weight:500;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto;min-width:0;text-align:right}
       `;
       this.card.appendChild(style);
 
