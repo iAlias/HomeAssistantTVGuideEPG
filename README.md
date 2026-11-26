@@ -39,7 +39,7 @@ installed with the integration and registers itself in the dashboard's **Add car
 
 | Country | Source | Channels included by default |
 |---|---|---|
-| Italy | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE |
+| Italy | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE, Canale 20, Rai 4, Iris |
 | United Kingdom | epgshare01.online (XMLTV) | BBC One, BBC Two, ITV1, Channel 4, Channel 5 |
 | Germany | epgshare01.online (XMLTV) | Das Erste, ZDF, RTL, SAT.1, ProSieben, VOX |
 | France | epgshare01.online (XMLTV) | TF1, France 2, France 3, France 5, M6, Arte |
