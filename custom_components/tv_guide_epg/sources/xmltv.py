@@ -70,6 +70,18 @@ def _text_or_none(element) -> Optional[str]:
     return element.text.strip() or None
 
 
+def _normalize_image_url(value: Optional[str]) -> Optional[str]:
+    """Normalize XMLTV image URLs for dashboards served over HTTPS."""
+    if not value:
+        return None
+    value = value.strip()
+    if value.startswith("//"):
+        return "https:" + value
+    if value.startswith("http://"):
+        return "https://" + value[7:]
+    return value if value.startswith("https://") else None
+
+
 def _parse_xmltv(xml_bytes: bytes, wanted_channels: List[str]) -> Dict[str, List[Programme]]:
     """Parse XMLTV bytes into {channel_id: [programme, ...]} for the wanted channels.
 
@@ -109,7 +121,7 @@ def _parse_xmltv(xml_bytes: bytes, wanted_channels: List[str]) -> Dict[str, List
             "_start": start,
             "_stop": stop,
             "genere": _text_or_none(programme_el.find("category")),
-            "locandina": icon_el.get("src") if icon_el is not None else None,
+            "locandina": _normalize_image_url(icon_el.get("src")) if icon_el is not None else None,
             "descrizione": _text_or_none(programme_el.find("desc")),
         })
 
