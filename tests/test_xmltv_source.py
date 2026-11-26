@@ -15,6 +15,7 @@ from custom_components.tv_guide_epg.sources.xmltv import (
     XmltvSource,
     _parse_xmltv,
     _parse_xmltv_datetime,
+    _normalize_image_url,
     _programme_nearest,
     _programme_upcoming,
     _programme_on_air,
@@ -246,3 +247,11 @@ def test_programme_upcoming_returns_next_four_programmes():
     result = _programme_upcoming(programmes, now, CHANNEL_ORDER, CHANNEL_NAMES)
     assert len(result["BBC One"]) == 2
     assert result["BBC One"][0]["titolo"] == "Antiques Roadshow"
+
+
+
+def test_normalizes_protocol_relative_and_insecure_poster_urls():
+    assert _normalize_image_url("//cdn.example.org/poster.jpg") == "https://cdn.example.org/poster.jpg"
+    assert _normalize_image_url("http://cdn.example.org/poster.jpg") == "https://cdn.example.org/poster.jpg"
+    assert _normalize_image_url("https://cdn.example.org/poster.jpg") == "https://cdn.example.org/poster.jpg"
+    assert _normalize_image_url(None) is None
