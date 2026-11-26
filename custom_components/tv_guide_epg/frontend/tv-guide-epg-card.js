@@ -167,11 +167,10 @@ class TvGuideEpgCard extends HTMLElement {
         .tvg-description{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
         .tvg-progress{height:3px;background:var(--divider-color);border-radius:3px;overflow:hidden;margin-top:3px}
         .tvg-progress-fill{display:block;height:100%;background:var(--primary-color)}
-        .tvg-upcoming{grid-column:2;display:grid;gap:3px;padding-top:2px}
-        .tvg-upcoming-label{font-size:.7rem;color:var(--secondary-text-color);text-transform:uppercase;letter-spacing:.04em}
-        .tvg-upcoming-item{display:flex;gap:8px;font-size:.75rem;min-width:0}
-        .tvg-upcoming-item time{color:var(--secondary-text-color);flex:none}
-        .tvg-upcoming-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .tvg-timeline{grid-column:1/-1;display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scroll-snap-type:x mandatory}
+        .tvg-timeline-item{flex:0 0 148px;min-width:0;padding:9px;border:1px solid var(--divider-color);border-radius:8px;background:var(--secondary-background-color);scroll-snap-align:start}
+        .tvg-timeline-time{display:block;font-size:.72rem;color:var(--secondary-text-color);margin-bottom:5px}
+        .tvg-timeline-title{font-size:.82rem;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
         .tvg-empty{padding:12px;color:var(--secondary-text-color)}
         @media(min-width:650px){.tvg-row{grid-template-columns:56px minmax(0,1fr)}.tvg-poster{width:56px;height:74px}}
       `;
@@ -213,6 +212,21 @@ class TvGuideEpgCard extends HTMLElement {
     this._renderContent();
   }
 
+  _timeline(channel, programmes) {
+    const timeline = this._el("div", "tvg-timeline");
+    timeline.setAttribute("aria-label", "Programmi successivi su " + channel);
+    for (const item of programmes.slice(0, 4)) {
+      const card = this._el("div", "tvg-timeline-item");
+      card.appendChild(this._el("time", "tvg-timeline-time", [
+        item.orario_inizio,
+        item.orario_fine
+      ].filter(Boolean).join(" – ")));
+      card.appendChild(this._el("div", "tvg-timeline-title", item.titolo || "Programma"));
+      timeline.appendChild(card);
+    }
+    return timeline;
+  }
+
   _renderContent() {
     if (!this.content || !this._hass) return;
     const channels = this._collect();
@@ -236,10 +250,8 @@ class TvGuideEpgCard extends HTMLElement {
       if (this._filter === "all" || this._filter === "prime") entries.push(["prime", prime]);
       for (const [kind, info] of entries) {
         if (kind === "upcoming") {
-          for (const item of info.prossimi) {
-            this.content.appendChild(this._programRow(channel, item, "upcoming"));
-            count++;
-          }
+          this.content.appendChild(this._timeline(channel, info.prossimi));
+          count++;
         } else {
           this.content.appendChild(this._programRow(channel, info, kind));
           count++;
