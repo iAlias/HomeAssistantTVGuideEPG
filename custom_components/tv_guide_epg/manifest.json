@@ -8,9 +8,8 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/iAlias/HomeAssistantTVGuideEPG/issues",
   "requirements": [
-    "aiohttp>=3.8.4",
     "async_timeout>=4.0.3",
     "beautifulsoup4>=4.12.3"
   ],
-  "version": "2.1.3"
+  "version": "2.2.0"
 }
