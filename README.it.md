@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Versione](https://img.shields.io/badge/versione-2.1.3-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Versione](https://img.shields.io/badge/versione-2.2.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![Licenza](https://img.shields.io/badge/licenza-MIT-green)](LICENSE)
 
 🇬🇧 [Read in English](README.md)
@@ -127,8 +127,10 @@ un `binary_sensor` che si accende quando un programma che lo contiene è in onda
 di quell'istanza — comodo per un'automazione che ti avvisa quando inizia una serie che segui.
 
 Nella stessa schermata scegli ogni quanto scaricare il palinsesto (30 minuti / 1 ora / 2 ore /
-4 ore) per le nazioni basate su XMLTV. L'Italia non compare lì: interroga pagine leggere e già
-filtrate ogni 10 minuti.
+4 ore) e l'orario di riferimento della prima serata (19:00–22:00, anche :30) per le nazioni
+basate su XMLTV. L'Italia usa la pagina dedicata di Sorrisi e si aggiorna ogni 10 minuti.
+La card include ricerca, filtri, avanzamento del programma e prossimi programmi quando la
+sorgente XMLTV li fornisce.
 
 ## Come funziona
 
