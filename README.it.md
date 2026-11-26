@@ -40,7 +40,7 @@ vera. La card si installa insieme all'integrazione e si registra da sola nel sel
 
 | Nazione | Fonte | Canali inclusi di default |
 |---|---|---|
-| Italia | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE |
+| Italia | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE, Canale 20, Rai 4, Iris |
 | Regno Unito | epgshare01.online (XMLTV) | BBC One, BBC Two, ITV1, Channel 4, Channel 5 |
 | Germania | epgshare01.online (XMLTV) | Das Erste, ZDF, RTL, SAT.1, ProSieben, VOX |
 | Francia | epgshare01.online (XMLTV) | TF1, France 2, France 3, France 5, M6, Arte |
