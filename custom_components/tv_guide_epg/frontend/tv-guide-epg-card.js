@@ -125,17 +125,6 @@ class TvGuideEpgCard extends HTMLElement {
       details.appendChild(track);
     }
     row.appendChild(details);
-    if (kind === "now" && info?.prossimi?.length) {
-      const upcoming = this._el("div", "tvg-upcoming");
-      upcoming.appendChild(this._el("span", "tvg-upcoming-label", "A seguire"));
-      for (const item of info.prossimi.slice(0, 3)) {
-        const line = this._el("div", "tvg-upcoming-item");
-        line.appendChild(this._el("time", "", item.orario_inizio || ""));
-        line.appendChild(this._el("span", "", item.titolo || ""));
-        upcoming.appendChild(line);
-      }
-      row.appendChild(upcoming);
-    }
     return row;
   }
 
@@ -157,8 +146,7 @@ class TvGuideEpgCard extends HTMLElement {
         .tvg-tab[aria-pressed=true]{background:var(--primary-color);color:var(--text-primary-color,#fff);border-color:var(--primary-color)}
         .tvg-list{display:grid;gap:8px;min-width:0}
         .tvg-row{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--divider-color);min-width:0}
-        .tvg-row:has(.tvg-upcoming){grid-template-columns:48px minmax(0,1fr)}
-        .tvg-poster{width:48px;height:64px;object-fit:cover;border-radius:6px;background:var(--secondary-background-color)}
+                .tvg-poster{width:48px;height:64px;object-fit:cover;border-radius:6px;background:var(--secondary-background-color)}
         .tvg-details{min-width:0;display:grid;gap:3px}
         .tvg-heading{display:flex;justify-content:space-between;gap:8px;min-width:0}
         .tvg-channel{font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -240,7 +228,7 @@ class TvGuideEpgCard extends HTMLElement {
     for (const [channel, data] of channels) {
       const now = data.ora_in_onda;
       const prime = data.prima_serata;
-      const haystack = [channel, now?.titolo, prime?.titolo].join(" ").toLocaleLowerCase();
+      const haystack = [channel, now?.titolo, prime?.titolo, ...(now?.prossimi || []).map(item => item.titolo)].join(" ").toLocaleLowerCase();
       if (this._query && !haystack.includes(this._query)) continue;
       const entries = [];
       if (this._filter === "all" || this._filter === "now") entries.push(["now", now]);
