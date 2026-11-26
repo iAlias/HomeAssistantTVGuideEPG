@@ -12,7 +12,7 @@ from .sources.sorrisi import SorrisiSource
 from .sources.xmltv import XmltvSource
 
 EPGSHARE01_URL = "https://epgshare01.online/epgshare01/epg_ripper_{tag}.xml.gz"
-SourceFactory = Callable[[aiohttp.ClientSession, Optional[int], int], ScheduleSource]
+SourceFactory = Callable[[aiohttp.ClientSession, Optional[int], float], ScheduleSource]
 
 
 @dataclass(frozen=True)
@@ -31,7 +31,7 @@ def _xmltv_factory(tag: str, timezone_name: str, channels: Dict[str, str]) -> So
     def make_source(
         session: aiohttp.ClientSession,
         minutes: Optional[int],
-        prime_time_hour: int = 21,
+        prime_time_hour: float = 21,
     ) -> ScheduleSource:
         return XmltvSource(
             session,
@@ -46,7 +46,7 @@ def _xmltv_factory(tag: str, timezone_name: str, channels: Dict[str, str]) -> So
     return make_source
 
 
-def _italy_factory(session: aiohttp.ClientSession, _minutes: Optional[int], _prime: int = 21):
+def _italy_factory(session: aiohttp.ClientSession, _minutes: Optional[int], _prime: float = 21):
     return SorrisiSource(session)
 
 
