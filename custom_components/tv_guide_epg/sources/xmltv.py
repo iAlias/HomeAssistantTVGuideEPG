@@ -267,10 +267,16 @@ class XmltvSource(ScheduleSource):
 
         tz = _resolve_timezone(self._timezone_name)
         now = datetime.now(timezone.utc)
+        current = _programme_on_air(
+            programmes_by_channel, now, self._channel_order, self._channel_names, tz
+        )
+        upcoming = _programme_upcoming(
+            programmes_by_channel, now, self._channel_order, self._channel_names, tz
+        )
+        for channel, info in current.items():
+            info["prossimi"] = upcoming.get(channel, [])
         return (
-            _programme_on_air(
-                programmes_by_channel, now, self._channel_order, self._channel_names, tz
-            ),
+            current,
             _programme_nearest(
                 programmes_by_channel,
                 now,
