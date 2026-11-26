@@ -9,7 +9,7 @@ from pathlib import Path
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.setup import async_when_setup
 
@@ -84,8 +84,23 @@ async def _async_add_lovelace_resource(hass: HomeAssistant, component: str) -> N
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Serve the Lovelace card and register it as a dashboard resource."""
+    """Serve the card and register a manual refresh service."""
     await _async_register_card(hass)
+
+    async def _async_refresh_service(call: ServiceCall) -> None:
+        country = call.data.get(CONF_COUNTRY)
+        coordinators = hass.data.get(DOMAIN, {})
+        targets = [
+            coordinator
+            for entry_id, coordinator in coordinators.items()
+            if not country
+            or hass.config_entries.async_get_entry(entry_id).data.get(CONF_COUNTRY) == country
+        ]
+        for coordinator in targets:
+            await coordinator.async_refresh()
+
+    if not hass.services.has_service(DOMAIN, "refresh"):
+        hass.services.async_register(DOMAIN, "refresh", _async_refresh_service)
     return True
 
 
