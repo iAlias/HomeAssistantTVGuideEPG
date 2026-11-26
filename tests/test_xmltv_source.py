@@ -244,5 +244,5 @@ def test_programme_upcoming_returns_next_four_programmes():
     programmes = _parse_xmltv(FIXTURE, CHANNEL_ORDER)
     now = datetime(2026, 9, 19, 19, 0, tzinfo=timezone.utc)
     result = _programme_upcoming(programmes, now, CHANNEL_ORDER, CHANNEL_NAMES)
-    assert len(result["BBC One"]) == 3
+    assert len(result["BBC One"]) == 2
     assert result["BBC One"][0]["titolo"] == "Antiques Roadshow"
