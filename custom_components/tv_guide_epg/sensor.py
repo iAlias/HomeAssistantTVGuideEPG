@@ -1,7 +1,7 @@
 """TV Guide EPG sensors: two per channel.
 
 Each channel gets a "Ora in onda" and a "Prima serata" sensor — for Italy that
-is 18 entities. Putting every channel in the attributes of a single entity, as
+is 24 entities. Putting every channel in the attributes of a single entity, as
 earlier versions did, made the data invisible unless you also installed the
 card; one entity per channel is directly usable in dashboards and automations.
 """
