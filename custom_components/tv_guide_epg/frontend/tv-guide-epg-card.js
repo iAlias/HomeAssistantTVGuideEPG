@@ -274,7 +274,7 @@ if (!customElements.get("tv-guide-epg-card")) {
 window.customCards = window.customCards || [];
 if (!window.customCards.some(card => card.type === "tv-guide-epg-card")) {
   window.customCards.push({
-    type: "custom:tv-guide-epg-card",
+    type: "tv-guide-epg-card",
     name: "Guida TV EPG",
     description: "Guida TV con programmi in onda, prossimi programmi e prima serata.",
     preview: true,
