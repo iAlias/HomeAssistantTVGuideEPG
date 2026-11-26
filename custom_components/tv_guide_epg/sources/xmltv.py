@@ -154,6 +154,28 @@ def _programme_on_air(
     return schedule
 
 
+def _programme_upcoming(
+    programmes_by_channel: Dict[str, List[Programme]],
+    now: datetime,
+    channel_order: List[str],
+    channel_names: Dict[str, str],
+    tz: Optional[tzinfo] = None,
+    limit: int = 4,
+) -> Dict[str, List[Dict[str, Optional[str]]]]:
+    """Return the next programmes for each channel, excluding the current one."""
+    result: Dict[str, List[Dict[str, Optional[str]]]] = {}
+    for channel_id in channel_order:
+        upcoming = [
+            item for item in programmes_by_channel.get(channel_id, [])
+            if item["_start"] > now
+        ][:limit]
+        if upcoming:
+            result[channel_names.get(channel_id, channel_id)] = [
+                _to_schedule_entry(item, tz) for item in upcoming
+            ]
+    return result
+
+
 def _programme_nearest(
     programmes_by_channel: Dict[str, List[Programme]],
     now: datetime,
@@ -195,6 +217,7 @@ class XmltvSource(ScheduleSource):
         channel_names: Optional[Dict[str, str]] = None,
         timezone_name: Optional[str] = None,
         refresh_minutes: int = 120,
+        prime_time_hour: int = PRIME_TIME_HOUR,
     ) -> None:
         self._session = session
         self._url = url
@@ -202,6 +225,7 @@ class XmltvSource(ScheduleSource):
         self._channel_names = channel_names or {}
         self._timezone_name = timezone_name
         self._refresh_minutes = refresh_minutes
+        self._prime_time_hour = max(0, min(23, int(prime_time_hour)))
 
     @property
     def channels(self) -> List[str]:
@@ -248,7 +272,7 @@ class XmltvSource(ScheduleSource):
             _programme_nearest(
                 programmes_by_channel,
                 now,
-                PRIME_TIME_HOUR,
+                self._prime_time_hour,
                 self._channel_order,
                 self._channel_names,
                 tz,
