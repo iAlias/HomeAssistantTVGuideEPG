@@ -155,7 +155,7 @@ class TvGuideEpgCard extends HTMLElement {
         .tvg-description{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
         .tvg-progress{height:3px;background:var(--divider-color);border-radius:3px;overflow:hidden;margin-top:3px}
         .tvg-progress-fill{display:block;height:100%;background:var(--primary-color)}
-        .tvg-timeline{grid-column:1/-1;display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scroll-snap-type:x mandatory}
+        .tvg-timeline-wrap{grid-column:1/-1;min-width:0}\n        .tvg-timeline-label{font-size:.72rem;color:var(--secondary-text-color);margin:2px 0 6px}\n        .tvg-timeline{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scroll-snap-type:x mandatory}
         .tvg-timeline-item{flex:0 0 148px;min-width:0;padding:9px;border:1px solid var(--divider-color);border-radius:8px;background:var(--secondary-background-color);scroll-snap-align:start}
         .tvg-timeline-time{display:block;font-size:.72rem;color:var(--secondary-text-color);margin-bottom:5px}
         .tvg-timeline-title{font-size:.82rem;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -201,6 +201,8 @@ class TvGuideEpgCard extends HTMLElement {
   }
 
   _timeline(channel, programmes) {
+    const wrapper = this._el("section", "tvg-timeline-wrap");
+    wrapper.appendChild(this._el("div", "tvg-timeline-label", "A seguire · " + channel));
     const timeline = this._el("div", "tvg-timeline");
     timeline.setAttribute("aria-label", "Programmi successivi su " + channel);
     for (const item of programmes.slice(0, 4)) {
@@ -212,7 +214,8 @@ class TvGuideEpgCard extends HTMLElement {
       card.appendChild(this._el("div", "tvg-timeline-title", item.titolo || "Programma"));
       timeline.appendChild(card);
     }
-    return timeline;
+    wrapper.appendChild(timeline);
+    return wrapper;
   }
 
   _renderContent() {
