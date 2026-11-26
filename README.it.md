@@ -60,7 +60,7 @@ di dati sono stati volutamente esclusi. Altre nazioni potranno essere aggiunte i
 | `<canale> - Prima serata` | titolo del programma di prima serata di quel canale | gli stessi di sopra |
 | `In onda: <preferito>` (uno per preferito configurato) | acceso se quel titolo è in onda ora, su uno dei canali dell'istanza | `canali`: dizionario canale → titolo |
 
-Sono quindi **18 entità per l'Italia** (9 canali), 10 per il Regno Unito e 12 a testa per Germania,
+Sono quindi **24 entità per l'Italia** (12 canali), 10 per il Regno Unito e 12 a testa per Germania,
 Francia e Spagna, più una per ogni preferito. Un canale per cui la fonte non ha dati riporta
 `Nessun dato`.
 
