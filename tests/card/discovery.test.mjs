@@ -138,6 +138,7 @@ test("carries the programme details the card renders", () => {
     genere: "Spettacolo",
     locandina: "https://example.com/p.jpg",
     descrizione: "In diretta dall'Arena di Verona.",
+    prossimi: [],
   });
 });
 

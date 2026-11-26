@@ -10,8 +10,10 @@ from homeassistant.core import callback
 from .const import (
     CONF_COUNTRY,
     CONF_FAVORITES,
+    CONF_PRIME_TIME_HOUR,
     CONF_REFRESH_MINUTES,
     DEFAULT_NAME,
+    DEFAULT_PRIME_TIME_HOUR,
     DEFAULT_REFRESH_MINUTES,
     DOMAIN,
 )
@@ -23,10 +25,18 @@ REFRESH_CHOICES = {
     120: "2 ore (consigliato)",
     240: "4 ore",
 }
+PRIME_TIME_CHOICES = {
+    19: "19:00",
+    20: "20:00",
+    20.5: "20:30",
+    21: "21:00",
+    21.5: "21:30",
+    22: "22:00",
+}
 
 
 class TvGuideEpgConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for TV Guide EPG: one entry per country."""
+    """Handle one config entry per country."""
 
     VERSION = 1
 
@@ -55,10 +65,7 @@ class TvGuideEpgConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class TvGuideEpgOptionsFlow(OptionsFlow):
-    """Favorite programs, plus the poll interval for XMLTV-backed countries."""
-
-    # No __init__: Home Assistant injects `config_entry` itself and exposes it
-    # as a read-only property, so assigning to it would raise AttributeError.
+    """Configure favorites, refresh interval and prime-time hour."""
 
     async def async_step_init(self, user_input: dict | None = None):
         if user_input is not None:
@@ -69,9 +76,8 @@ class TvGuideEpgOptionsFlow(OptionsFlow):
             vol.Optional(
                 CONF_FAVORITES,
                 default=self.config_entry.options.get(CONF_FAVORITES, ""),
-            ): str
+            ): str,
         }
-
         if country.configurable_interval:
             current = self.config_entry.options.get(
                 CONF_REFRESH_MINUTES, DEFAULT_REFRESH_MINUTES
@@ -79,5 +85,10 @@ class TvGuideEpgOptionsFlow(OptionsFlow):
             schema_dict[vol.Optional(CONF_REFRESH_MINUTES, default=current)] = vol.In(
                 REFRESH_CHOICES
             )
-
+            prime_current = self.config_entry.options.get(
+                CONF_PRIME_TIME_HOUR, DEFAULT_PRIME_TIME_HOUR
+            )
+            schema_dict[vol.Optional(CONF_PRIME_TIME_HOUR, default=prime_current)] = vol.In(
+                PRIME_TIME_CHOICES
+            )
         return self.async_show_form(step_id="init", data_schema=vol.Schema(schema_dict))

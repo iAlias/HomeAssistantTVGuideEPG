@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-2.1.3-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.2.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇮🇹 [Leggi in italiano](README.it.md)
@@ -39,7 +39,7 @@ installed with the integration and registers itself in the dashboard's **Add car
 
 | Country | Source | Channels included by default |
 |---|---|---|
-| Italy | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE |
+| Italy | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE, Canale 20, Rai 4, Iris |
 | United Kingdom | epgshare01.online (XMLTV) | BBC One, BBC Two, ITV1, Channel 4, Channel 5 |
 | Germany | epgshare01.online (XMLTV) | Das Erste, ZDF, RTL, SAT.1, ProSieben, VOX |
 | France | epgshare01.online (XMLTV) | TF1, France 2, France 3, France 5, M6, Arte |
@@ -59,7 +59,7 @@ programme data were deliberately left out. More countries can be added later; se
 | `<channel> - Prima serata` | title of that channel's prime-time programme | same as above |
 | `In onda: <favorite>` (one per configured favorite) | on when that title is airing now, on any of the instance's channels | `canali`: matching channel → title |
 
-That is **18 entities for Italy** (9 channels), 10 for the UK and 12 each for Germany, France and
+That is **24 entities for Italy** (12 channels), 10 for the UK and 12 each for Germany, France and
 Spain, plus one per favorite. A channel the source has no data for reads `Nessun dato`.
 
 Attribute *keys* are Italian for consistency with this author's other Home Assistant projects;

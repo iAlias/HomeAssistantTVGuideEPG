@@ -70,6 +70,18 @@ def _text_or_none(element) -> Optional[str]:
     return element.text.strip() or None
 
 
+def _normalize_image_url(value: Optional[str]) -> Optional[str]:
+    """Normalize XMLTV image URLs for dashboards served over HTTPS."""
+    if not value:
+        return None
+    value = value.strip()
+    if value.startswith("//"):
+        return "https:" + value
+    if value.startswith("http://"):
+        return "https://" + value[7:]
+    return value if value.startswith("https://") else None
+
+
 def _parse_xmltv(xml_bytes: bytes, wanted_channels: List[str]) -> Dict[str, List[Programme]]:
     """Parse XMLTV bytes into {channel_id: [programme, ...]} for the wanted channels.
 
@@ -109,7 +121,7 @@ def _parse_xmltv(xml_bytes: bytes, wanted_channels: List[str]) -> Dict[str, List
             "_start": start,
             "_stop": stop,
             "genere": _text_or_none(programme_el.find("category")),
-            "locandina": icon_el.get("src") if icon_el is not None else None,
+            "locandina": _normalize_image_url(icon_el.get("src")) if icon_el is not None else None,
             "descrizione": _text_or_none(programme_el.find("desc")),
         })
 
@@ -154,10 +166,32 @@ def _programme_on_air(
     return schedule
 
 
+def _programme_upcoming(
+    programmes_by_channel: Dict[str, List[Programme]],
+    now: datetime,
+    channel_order: List[str],
+    channel_names: Dict[str, str],
+    tz: Optional[tzinfo] = None,
+    limit: int = 4,
+) -> Dict[str, List[Dict[str, Optional[str]]]]:
+    """Return the next programmes for each channel, excluding the current one."""
+    result: Dict[str, List[Dict[str, Optional[str]]]] = {}
+    for channel_id in channel_order:
+        upcoming = [
+            item for item in programmes_by_channel.get(channel_id, [])
+            if item["_start"] > now
+        ][:limit]
+        if upcoming:
+            result[channel_names.get(channel_id, channel_id)] = [
+                _to_schedule_entry(item, tz) for item in upcoming
+            ]
+    return result
+
+
 def _programme_nearest(
     programmes_by_channel: Dict[str, List[Programme]],
     now: datetime,
-    target_hour: int,
+    target_hour: float,
     channel_order: List[str],
     channel_names: Dict[str, str],
     tz: Optional[tzinfo] = None,
@@ -175,8 +209,10 @@ def _programme_nearest(
             continue
 
         reference_tz = tz or candidates[0]["_start"].tzinfo
+        hour = int(target_hour)
+        minute = round((target_hour - hour) * 60)
         target = now.astimezone(reference_tz).replace(
-            hour=target_hour, minute=0, second=0, microsecond=0
+            hour=hour, minute=minute, second=0, microsecond=0
         )
         closest = min(candidates, key=lambda p: abs((p["_start"] - target).total_seconds()))
         schedule[channel_names.get(channel_id, channel_id)] = _to_schedule_entry(closest, tz)
@@ -195,6 +231,7 @@ class XmltvSource(ScheduleSource):
         channel_names: Optional[Dict[str, str]] = None,
         timezone_name: Optional[str] = None,
         refresh_minutes: int = 120,
+        prime_time_hour: float = PRIME_TIME_HOUR,
     ) -> None:
         self._session = session
         self._url = url
@@ -202,6 +239,7 @@ class XmltvSource(ScheduleSource):
         self._channel_names = channel_names or {}
         self._timezone_name = timezone_name
         self._refresh_minutes = refresh_minutes
+        self._prime_time_hour = max(0.0, min(23.5, float(prime_time_hour)))
 
     @property
     def channels(self) -> List[str]:
@@ -241,14 +279,20 @@ class XmltvSource(ScheduleSource):
 
         tz = _resolve_timezone(self._timezone_name)
         now = datetime.now(timezone.utc)
+        current = _programme_on_air(
+            programmes_by_channel, now, self._channel_order, self._channel_names, tz
+        )
+        upcoming = _programme_upcoming(
+            programmes_by_channel, now, self._channel_order, self._channel_names, tz
+        )
+        for channel, info in current.items():
+            info["prossimi"] = upcoming.get(channel, [])
         return (
-            _programme_on_air(
-                programmes_by_channel, now, self._channel_order, self._channel_names, tz
-            ),
+            current,
             _programme_nearest(
                 programmes_by_channel,
                 now,
-                PRIME_TIME_HOUR,
+                self._prime_time_hour,
                 self._channel_order,
                 self._channel_names,
                 tz,

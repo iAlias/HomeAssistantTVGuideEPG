@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Versione](https://img.shields.io/badge/versione-2.1.3-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Versione](https://img.shields.io/badge/versione-2.2.0-orange)](custom_components/tv_guide_epg/manifest.json)
 [![Licenza](https://img.shields.io/badge/licenza-MIT-green)](LICENSE)
 
 🇬🇧 [Read in English](README.md)
@@ -40,7 +40,7 @@ vera. La card si installa insieme all'integrazione e si registra da sola nel sel
 
 | Nazione | Fonte | Canali inclusi di default |
 |---|---|---|
-| Italia | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE |
+| Italia | sorrisi.com | Rai 1, Rai 2, Rai 3, Rete 4, Canale 5, Italia 1, La7, TV8, NOVE, Canale 20, Rai 4, Iris |
 | Regno Unito | epgshare01.online (XMLTV) | BBC One, BBC Two, ITV1, Channel 4, Channel 5 |
 | Germania | epgshare01.online (XMLTV) | Das Erste, ZDF, RTL, SAT.1, ProSieben, VOX |
 | Francia | epgshare01.online (XMLTV) | TF1, France 2, France 3, France 5, M6, Arte |
@@ -60,7 +60,7 @@ di dati sono stati volutamente esclusi. Altre nazioni potranno essere aggiunte i
 | `<canale> - Prima serata` | titolo del programma di prima serata di quel canale | gli stessi di sopra |
 | `In onda: <preferito>` (uno per preferito configurato) | acceso se quel titolo è in onda ora, su uno dei canali dell'istanza | `canali`: dizionario canale → titolo |
 
-Sono quindi **18 entità per l'Italia** (9 canali), 10 per il Regno Unito e 12 a testa per Germania,
+Sono quindi **24 entità per l'Italia** (12 canali), 10 per il Regno Unito e 12 a testa per Germania,
 Francia e Spagna, più una per ogni preferito. Un canale per cui la fonte non ha dati riporta
 `Nessun dato`.
 
@@ -127,8 +127,10 @@ un `binary_sensor` che si accende quando un programma che lo contiene è in onda
 di quell'istanza — comodo per un'automazione che ti avvisa quando inizia una serie che segui.
 
 Nella stessa schermata scegli ogni quanto scaricare il palinsesto (30 minuti / 1 ora / 2 ore /
-4 ore) per le nazioni basate su XMLTV. L'Italia non compare lì: interroga pagine leggere e già
-filtrate ogni 10 minuti.
+4 ore) e l'orario di riferimento della prima serata (19:00–22:00, anche :30) per le nazioni
+basate su XMLTV. L'Italia usa la pagina dedicata di Sorrisi e si aggiorna ogni 10 minuti.
+La card include ricerca, filtri, avanzamento del programma e prossimi programmi quando la
+sorgente XMLTV li fornisce.
 
 ## Come funziona
 

@@ -113,3 +113,26 @@ def test_parser_canonicalises_channel_spelling():
     assert "La7" in result and "La 7" not in result
     assert "TV8" in result and "TV 8" not in result
     assert "Nove" in result
+
+
+
+def test_extracts_lazy_loaded_poster_urls():
+    from bs4 import BeautifulSoup
+    from custom_components.tv_guide_epg.sources.sorrisi import _extract_image
+
+    article = BeautifulSoup(
+        '<article><figure class="gtv-program-image"><img data-src="//cdn.example.org/poster.jpg" src="data:image/gif;base64,abc"></figure></article>',
+        "html.parser",
+    ).article
+    assert _extract_image(article) == "https://cdn.example.org/poster.jpg"
+
+
+def test_extracts_relative_poster_urls():
+    from bs4 import BeautifulSoup
+    from custom_components.tv_guide_epg.sources.sorrisi import _extract_image
+
+    article = BeautifulSoup(
+        '<article><figure class="gtv-program-image"><img src="/images/poster.jpg"></figure></article>',
+        "html.parser",
+    ).article
+    assert _extract_image(article) == "https://www.sorrisi.com/images/poster.jpg"
