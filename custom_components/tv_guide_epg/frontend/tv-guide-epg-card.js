@@ -90,10 +90,11 @@ class TvGuideEpgCard extends HTMLElement {
     img.alt = "";
     img.loading = "lazy";
     img.decoding = "async";
-    img.referrerPolicy = "no-referrer";
+    img.referrerPolicy = "strict-origin-when-cross-origin";
     img.src = info.locandina;
     img.addEventListener("error", () => {
-      img.remove();
+      const fallback = this._el("div", "tvg-poster-fallback", "TV");
+      img.replaceWith(fallback);
     }, {once: true});
     return img;
   }
@@ -146,7 +147,7 @@ class TvGuideEpgCard extends HTMLElement {
         .tvg-tab[aria-pressed=true]{background:var(--primary-color);color:var(--text-primary-color,#fff);border-color:var(--primary-color)}
         .tvg-list{display:grid;gap:8px;min-width:0}
         .tvg-row{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--divider-color);min-width:0}
-                .tvg-poster{width:48px;height:64px;object-fit:cover;border-radius:6px;background:var(--secondary-background-color)}
+                .tvg-poster{width:48px;height:64px;object-fit:cover;border-radius:6px;background:var(--secondary-background-color)}\n        .tvg-poster-fallback{width:48px;height:64px;display:grid;place-items:center;border-radius:6px;background:var(--secondary-background-color);color:var(--secondary-text-color);font-size:.7rem}
         .tvg-details{min-width:0;display:grid;gap:3px}
         .tvg-heading{display:flex;justify-content:space-between;gap:8px;min-width:0}
         .tvg-channel{font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
