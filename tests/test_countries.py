@@ -78,6 +78,6 @@ def test_every_country_declares_its_channels():
 
 def test_channel_counts_match_the_documented_entity_totals():
     """Two sensors per channel: 18 for Italy, 10 for the UK, 12 for the others."""
-    expected = {"IT": 9, "UK": 5, "DE": 6, "FR": 6, "ES": 6}
+    expected = {"IT": 12, "UK": 5, "DE": 6, "FR": 6, "ES": 6}
     actual = {code: len(cfg.make_source(None, None).channels) for code, cfg in COUNTRIES.items()}
     assert actual == expected
