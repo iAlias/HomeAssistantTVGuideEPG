@@ -59,7 +59,7 @@ programme data were deliberately left out. More countries can be added later; se
 | `<channel> - Prima serata` | title of that channel's prime-time programme | same as above |
 | `In onda: <favorite>` (one per configured favorite) | on when that title is airing now, on any of the instance's channels | `canali`: matching channel → title |
 
-That is **18 entities for Italy** (9 channels), 10 for the UK and 12 each for Germany, France and
+That is **24 entities for Italy** (12 channels), 10 for the UK and 12 each for Germany, France and
 Spain, plus one per favorite. A channel the source has no data for reads `Nessun dato`.
 
 Attribute *keys* are Italian for consistency with this author's other Home Assistant projects;
