@@ -16,6 +16,7 @@ from custom_components.tv_guide_epg.sources.xmltv import (
     _parse_xmltv,
     _parse_xmltv_datetime,
     _programme_nearest,
+    _programme_upcoming,
     _programme_on_air,
     _resolve_timezone,
 )
@@ -215,3 +216,33 @@ def test_channels_fall_back_to_the_raw_id_when_unnamed():
         session=None, url="https://example.com/epg.xml.gz", channel_order=["Foo.uk"]
     )
     assert source.channels == ["Foo.uk"]
+
+
+
+def test_programme_nearest_supports_half_hour_target():
+    programmes = {
+        "BBC.One.Lon.HD.uk": [
+            {"_start": datetime(2026, 9, 19, 20, 30, tzinfo=timezone.utc),
+             "_stop": datetime(2026, 9, 19, 21, 0, tzinfo=timezone.utc),
+             "titolo": "Inizio 20:30", "genere": None, "locandina": None, "descrizione": None},
+            {"_start": datetime(2026, 9, 19, 21, 0, tzinfo=timezone.utc),
+             "_stop": datetime(2026, 9, 19, 22, 0, tzinfo=timezone.utc),
+             "titolo": "Inizio 21:00", "genere": None, "locandina": None, "descrizione": None},
+        ]
+    }
+    result = _programme_nearest(
+        programmes,
+        datetime(2026, 9, 19, 12, 0, tzinfo=timezone.utc),
+        20.5,
+        CHANNEL_ORDER[:1],
+        CHANNEL_NAMES,
+    )
+    assert result["BBC One"]["titolo"] == "Inizio 20:30"
+
+
+def test_programme_upcoming_returns_next_four_programmes():
+    programmes = _parse_xmltv(FIXTURE, CHANNEL_ORDER)
+    now = datetime(2026, 9, 19, 19, 0, tzinfo=timezone.utc)
+    result = _programme_upcoming(programmes, now, CHANNEL_ORDER, CHANNEL_NAMES)
+    assert len(result["BBC One"]) == 3
+    assert result["BBC One"][0]["titolo"] == "Antiques Roadshow"
