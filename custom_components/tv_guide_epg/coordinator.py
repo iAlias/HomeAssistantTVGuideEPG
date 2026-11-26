@@ -39,6 +39,7 @@ class EpgCoordinator(DataUpdateCoordinator[Tuple[Schedule, Schedule]]):
             update_interval=source.refresh_interval,
         )
         self._source = source
+        self.last_source_error: str | None = None
 
     @property
     def channels(self) -> list[str]:
@@ -47,7 +48,21 @@ class EpgCoordinator(DataUpdateCoordinator[Tuple[Schedule, Schedule]]):
 
     async def _async_update_data(self) -> Tuple[Schedule, Schedule]:
         previous = self.data
-        now, prime = await self._source.get_schedules()
+        try:
+            now, prime = await self._source.get_schedules()
+        except Exception as err:  # noqa: BLE001
+            self.last_source_error = str(err)
+            _LOGGER.exception("TV Guide EPG source update failed")
+            if previous is not None:
+                return previous
+            return {}, {}
+
+        if not now and not prime:
+            self.last_source_error = "La sorgente non ha restituito programmi"
+            _LOGGER.warning("TV Guide EPG source returned an empty schedule")
+        else:
+            self.last_source_error = None
+
         if previous is not None:
             prev_now, prev_prime = previous
             now = _merge_with_previous(now, prev_now)
