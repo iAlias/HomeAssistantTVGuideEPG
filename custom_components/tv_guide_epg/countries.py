@@ -1,13 +1,4 @@
-"""Registry mapping a country code to its display name and data source.
-
-Adding a country means adding one entry here — either reusing ``XmltvSource``
-with an epgshare01.online tag and channel list, or pointing at a bespoke
-``ScheduleSource`` when the country has no usable XMLTV feed (as with Italy).
-
-Every channel id below was verified against the live feed on 2026-09-19: ids
-that exist in the channel list but carry no programmes (``Channel.5.uk`` was
-one) are deliberately excluded in favour of the variant that has data.
-"""
+"""Registry mapping countries to their EPG data sources."""
 
 from __future__ import annotations
 
@@ -21,13 +12,12 @@ from .sources.sorrisi import SorrisiSource
 from .sources.xmltv import XmltvSource
 
 EPGSHARE01_URL = "https://epgshare01.online/epgshare01/epg_ripper_{tag}.xml.gz"
-
-SourceFactory = Callable[[aiohttp.ClientSession, Optional[int]], ScheduleSource]
+SourceFactory = Callable[[aiohttp.ClientSession, Optional[int], int], ScheduleSource]
 
 
 @dataclass(frozen=True)
 class CountryConfig:
-    """How one country is fetched and presented."""
+    """How a country is fetched and presented."""
 
     name: str
     configurable_interval: bool
@@ -35,16 +25,14 @@ class CountryConfig:
 
 
 def _xmltv_factory(tag: str, timezone_name: str, channels: Dict[str, str]) -> SourceFactory:
-    """Build a factory for an epgshare01.online country.
-
-    ``channels`` maps the feed's channel id to the display name shown to the
-    user, and its order is the order channels appear in the sensors.
-    ``timezone_name`` is the country's civil timezone, used to render times and
-    to locate prime time — the feeds' own offsets do not reliably match it.
-    """
+    """Build a source factory for an epgshare01.online country."""
     channel_order: List[str] = list(channels)
 
-    def make_source(session: aiohttp.ClientSession, minutes: Optional[int]) -> ScheduleSource:
+    def make_source(
+        session: aiohttp.ClientSession,
+        minutes: Optional[int],
+        prime_time_hour: int = 21,
+    ) -> ScheduleSource:
         return XmltvSource(
             session,
             url=EPGSHARE01_URL.format(tag=tag),
@@ -52,16 +40,21 @@ def _xmltv_factory(tag: str, timezone_name: str, channels: Dict[str, str]) -> So
             channel_names=dict(channels),
             timezone_name=timezone_name,
             refresh_minutes=minutes or 120,
+            prime_time_hour=prime_time_hour,
         )
 
     return make_source
+
+
+def _italy_factory(session: aiohttp.ClientSession, _minutes: Optional[int], _prime: int = 21):
+    return SorrisiSource(session)
 
 
 COUNTRIES: Dict[str, CountryConfig] = {
     "IT": CountryConfig(
         name="Italia",
         configurable_interval=False,
-        make_source=lambda session, _minutes: SorrisiSource(session),
+        make_source=_italy_factory,
     ),
     "UK": CountryConfig(
         name="Regno Unito",
