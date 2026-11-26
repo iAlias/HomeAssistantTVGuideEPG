@@ -179,7 +179,7 @@ def _programme_upcoming(
 def _programme_nearest(
     programmes_by_channel: Dict[str, List[Programme]],
     now: datetime,
-    target_hour: int,
+    target_hour: float,
     channel_order: List[str],
     channel_names: Dict[str, str],
     tz: Optional[tzinfo] = None,
@@ -197,8 +197,10 @@ def _programme_nearest(
             continue
 
         reference_tz = tz or candidates[0]["_start"].tzinfo
+        hour = int(target_hour)
+        minute = round((target_hour - hour) * 60)
         target = now.astimezone(reference_tz).replace(
-            hour=target_hour, minute=0, second=0, microsecond=0
+            hour=hour, minute=minute, second=0, microsecond=0
         )
         closest = min(candidates, key=lambda p: abs((p["_start"] - target).total_seconds()))
         schedule[channel_names.get(channel_id, channel_id)] = _to_schedule_entry(closest, tz)
@@ -217,7 +219,7 @@ class XmltvSource(ScheduleSource):
         channel_names: Optional[Dict[str, str]] = None,
         timezone_name: Optional[str] = None,
         refresh_minutes: int = 120,
-        prime_time_hour: int = PRIME_TIME_HOUR,
+        prime_time_hour: float = PRIME_TIME_HOUR,
     ) -> None:
         self._session = session
         self._url = url
@@ -225,7 +227,7 @@ class XmltvSource(ScheduleSource):
         self._channel_names = channel_names or {}
         self._timezone_name = timezone_name
         self._refresh_minutes = refresh_minutes
-        self._prime_time_hour = max(0, min(23, int(prime_time_hour)))
+        self._prime_time_hour = max(0.0, min(23.5, float(prime_time_hour)))
 
     @property
     def channels(self) -> List[str]:
