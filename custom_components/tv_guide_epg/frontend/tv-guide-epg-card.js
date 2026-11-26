@@ -254,7 +254,7 @@ class TvGuideEpgCard extends HTMLElement {
     this._busy = true;
     this._render();
     try {
-      await this._hass.callService("homeassistant", "update_entity", {entity_id: this._entityIds});
+      await this._hass.callService("tv_guide_epg", "refresh", this._cfg.nazione ? {nazione: this._cfg.nazione} : {});
       this._last = new Date();
     } catch (err) {
       console.error("TV Guide EPG: aggiornamento non riuscito", err);
