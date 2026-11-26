@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta
 import logging
+from urllib.parse import urljoin
 from typing import List, Optional, Tuple
 
 import aiohttp
@@ -31,9 +32,12 @@ CHANNEL_ORDER = [
     "La7",
     "TV8",
     "Nove",
+    "Canale 20",
+    "Rai 4",
+    "Iris",
 ]
 
-SKIP_CHANNELS = {"IRIS", "CANALE20", "20", "20MEDIASET", "RAI4"}
+SKIP_CHANNELS = set()
 
 
 def _normalize(channel: str) -> str:
@@ -91,11 +95,24 @@ def _extract_genre(article) -> Optional[str]:
 
 
 def _extract_image(article) -> Optional[str]:
+    """Read standard and lazy-loaded image attributes from Sorrisi markup."""
     img = article.select_one("figure.gtv-program-image img")
-    src = img.get("src") if img else None
+    if not img:
+        return None
+    src = (
+        img.get("data-src")
+        or img.get("data-lazy-src")
+        or img.get("data-original")
+        or img.get("src")
+    )
+    if not src or src.startswith("data:"):
+        srcset = img.get("data-srcset") or img.get("srcset")
+        if srcset:
+            src = srcset.split(",")[-1].strip().split(" ")[0]
     if not src:
         return None
-    return f"https:{src}" if src.startswith("//") else src
+    absolute = urljoin("https://www.sorrisi.com/", src.strip())
+    return absolute if absolute.startswith(("https://", "http://")) else None
 
 
 def _extract_abstract(article) -> Optional[str]:
