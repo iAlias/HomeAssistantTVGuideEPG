@@ -92,4 +92,5 @@ class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
             "locandina": program.get("locandina"),
             "descrizione": program.get("descrizione"),
             "prossimi": program.get("prossimi", []),
+            "errore_sorgente": self.coordinator.last_source_error,
         }
