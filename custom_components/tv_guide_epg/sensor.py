@@ -91,4 +91,5 @@ class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
             "genere": program.get("genere"),
             "locandina": program.get("locandina"),
             "descrizione": program.get("descrizione"),
+            "prossimi": program.get("prossimi", []),
         }
