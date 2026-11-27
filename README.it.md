@@ -10,6 +10,8 @@
 [![Version](https://img.shields.io/badge/version-2.3.2-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+[![Offrimi un caffè](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ialias)
+
 🇬🇧 [Read in English](README.md)
 
 L'integrazione crea sensori Home Assistant per i programmi in onda e per la prima serata.

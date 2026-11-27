@@ -10,6 +10,8 @@
 [![Version](https://img.shields.io/badge/version-2.3.2-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+[![Buy me a coffee](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ialias)
+
 🇮🇹 [Leggi in italiano](README.it.md)
 
 The integration creates Home Assistant sensors for programmes currently on air and prime time.
