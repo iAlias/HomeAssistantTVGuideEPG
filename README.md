@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-2.3.1-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.3.2-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇮🇹 [Leggi in italiano](README.it.md)
@@ -20,10 +20,8 @@ For Italy, four providers are selectable independently in each card: Sorrisi, IP
 ZapprTV and EPG Italia. Each provider has its own coordinator and sensor set. This means that
 two cards can display different EPG providers at the same time.
 
-> **Testing status:** version 2.3.1 is under testing on the
-> [feature branch](https://github.com/iAlias/HomeAssistantTVGuideEPG/tree/feature/card-source-selector)
-> and has not been merged into `main` or published as a HACS release. Provider feeds and channel
-> coverage must be checked in a real Home Assistant installation. See [Provider notes](#provider-notes).
+> **Testing status:** provider feeds and channel coverage still need checking in a real Home
+> Assistant installation. See [Provider notes](#provider-notes).
 
 ---
 

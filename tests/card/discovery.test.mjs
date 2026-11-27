@@ -50,7 +50,11 @@ const TvGuideEpgCard = loadCard();
 function sensor(canale, tipo, titolo, {nazione = "IT", posizione = 1, ...rest} = {}) {
   return {
     state: titolo,
-    attributes: {canale, tipo, nazione, posizione, ...rest},
+    attributes: {
+      canale, tipo, nazione, posizione,
+      source_id: nazione === "IT" ? "sorrisi" : "epgshare",
+      ...rest,
+    },
   };
 }
 
@@ -63,7 +67,8 @@ const LEGACY_AGGREGATE = {
 function collect(states, config = {}) {
   const card = new TvGuideEpgCard();
   card.setConfig({type: "custom:tv-guide-epg-card", ...config});
-  return card._collect({states});
+  card._hass = {states};
+  return card._collect();
 }
 
 test("finds both sensors of every channel and orders them by channel number", () => {
@@ -143,12 +148,12 @@ test("carries the programme details the card renders", () => {
 });
 
 test("registers itself in the dashboard card picker, and survives a double load", () => {
-  assert.deepEqual([...defining], ["tv-guide-epg-card"]);
+  assert.deepEqual([...defining].sort(), ["tv-guide-epg-card", "tv-guide-epg-card-editor"]);
 
   // An upgrade can leave the old manual /local/ resource in place: loading the
   // file twice must not throw a duplicate-definition error nor list it twice.
   assert.doesNotThrow(() => loadCard());
-  assert.deepEqual([...defining], ["tv-guide-epg-card"]);
+  assert.deepEqual([...defining].sort(), ["tv-guide-epg-card", "tv-guide-epg-card-editor"]);
   assert.equal(
     (globalThis.window.customCards || []).filter((c) => c.type === "tv-guide-epg-card").length,
     1,

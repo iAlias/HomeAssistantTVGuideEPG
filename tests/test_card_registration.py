@@ -33,11 +33,11 @@ def test_the_card_ships_inside_the_integration_folder():
 
 
 def test_setup_serves_the_card_and_loads_it_on_every_dashboard():
-    """A static path plus an extra module URL: no manual resource."""
+    """A static path plus a Lovelace resource: nothing to add by hand."""
     source = (COMPONENT / "__init__.py").read_text("utf-8")
     assert "async_setup" in source
     assert "async_register_static_paths" in source
-    assert "add_extra_js_url" in source
+    assert "async_create_item" in source
     # The constant used for the served URL must match the shipped filename.
     assert CARD.name in source
 

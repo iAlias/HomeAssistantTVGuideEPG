@@ -1,6 +1,7 @@
 """XMLTV providers matched by channel display names instead of provider-specific IDs."""
 from __future__ import annotations
 
+import asyncio
 import gzip
 import logging
 from datetime import datetime, timezone
@@ -8,7 +9,6 @@ from typing import Dict, List, Optional
 from xml.etree import ElementTree
 
 import aiohttp
-import async_timeout
 
 from .base import Schedule, ScheduleSource
 from .xmltv import (
@@ -71,7 +71,7 @@ class NamedXmltvSource(ScheduleSource):
         return timedelta(minutes=self._refresh_minutes)
 
     async def _fetch(self) -> bytes:
-        async with async_timeout.timeout(60):
+        async with asyncio.timeout(60):
             async with self._session.get(self._url, timeout=55) as response:
                 response.raise_for_status()
                 return await response.read()

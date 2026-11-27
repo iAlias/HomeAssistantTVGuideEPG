@@ -7,6 +7,6 @@
   "documentation": "https://github.com/iAlias/HomeAssistantTVGuideEPG",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/iAlias/HomeAssistantTVGuideEPG/issues",
-  "requirements": ["async_timeout>=4.0.3", "beautifulsoup4>=4.12.3"],
-  "version": "2.3.1"
+  "requirements": ["beautifulsoup4>=4.12.3"],
+  "version": "2.3.2"
 }

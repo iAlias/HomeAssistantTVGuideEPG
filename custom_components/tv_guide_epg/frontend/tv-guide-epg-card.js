@@ -28,11 +28,6 @@ class TvGuideEpgCard extends HTMLElement {
     };
     // Do not combine same-channel sensors from multiple providers when a card
     // is configured in YAML without opening the visual editor first.
-    if (!this._cfg.source_id) {
-      this._cfg.source_id = this._cfg.nazione && this._cfg.nazione !== "IT"
-        ? "epgshare"
-        : "sorrisi";
-    }
     if (this.card) this._render();
   }
 
@@ -55,7 +50,9 @@ class TvGuideEpgCard extends HTMLElement {
       const a = state.attributes || {};
       if (!a.canale || !a.tipo) continue;
       if (this._cfg.nazione && a.nazione !== this._cfg.nazione) continue;
-      if (this._cfg.source_id && a.source_id !== this._cfg.source_id) continue;
+      // Only Italy has several providers: default it to Sorrisi, leave the others alone.
+      const source = this._cfg.source_id || (a.nazione === "IT" ? "sorrisi" : null);
+      if (source && a.source_id !== source) continue;
       if (this._cfg.channels && !this._cfg.channels.includes(a.canale)) continue;
       this._entityIds.push(entityId);
       if (!byChannel.has(a.canale)) byChannel.set(a.canale, {posizione: a.posizione ?? 999});

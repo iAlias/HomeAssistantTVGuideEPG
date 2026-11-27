@@ -1,13 +1,13 @@
 """Adapter for the public ZapprTV aggregated EPG JSON feed."""
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from zoneinfo import ZoneInfo
 
 import aiohttp
-import async_timeout
 
 from .base import Schedule, ScheduleSource
 
@@ -53,7 +53,7 @@ class ZapprSource(ScheduleSource):
         return timedelta(hours=4)
 
     async def get_schedules(self) -> Tuple[Schedule, Schedule]:
-        async with async_timeout.timeout(45):
+        async with asyncio.timeout(45):
             async with self._session.get(URL, timeout=40) as response:
                 response.raise_for_status()
                 payload = await response.json(content_type=None)

@@ -9,7 +9,6 @@ from urllib.parse import urljoin
 from typing import List, Optional, Tuple
 
 import aiohttp
-import async_timeout
 from bs4 import BeautifulSoup
 
 from .base import Schedule, ScheduleSource
@@ -62,7 +61,7 @@ def _canonical(channel: str) -> str:
 
 async def _fetch_page(session: aiohttp.ClientSession, url: str) -> str:
     try:
-        async with async_timeout.timeout(15):
+        async with asyncio.timeout(15):
             resp = await session.get(url)
             if resp.status != 200:
                 _LOGGER.warning("Sorrisi: %s status %s", url, resp.status)

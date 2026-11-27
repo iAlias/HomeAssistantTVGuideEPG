@@ -17,6 +17,7 @@ pre-filtered "now"/"tonight" pages, so this module computes both locally.
 
 from __future__ import annotations
 
+import asyncio
 import gzip
 import logging
 from datetime import datetime, timedelta, timezone, tzinfo
@@ -25,7 +26,6 @@ from xml.etree import ElementTree
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import aiohttp
-import async_timeout
 
 from .base import Schedule, ScheduleSource
 
@@ -251,7 +251,7 @@ class XmltvSource(ScheduleSource):
 
     async def _fetch(self) -> bytes:
         try:
-            async with async_timeout.timeout(30):
+            async with asyncio.timeout(30):
                 resp = await self._session.get(self._url)
                 if resp.status != 200:
                     _LOGGER.warning("XMLTV: %s status %s", self._url, resp.status)
