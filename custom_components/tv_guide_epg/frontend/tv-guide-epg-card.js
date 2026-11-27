@@ -26,6 +26,13 @@ class TvGuideEpgCard extends HTMLElement {
       show_timestamp: true,
       ...cfg,
     };
+    // Do not combine same-channel sensors from multiple providers when a card
+    // is configured in YAML without opening the visual editor first.
+    if (!this._cfg.source_id) {
+      this._cfg.source_id = this._cfg.nazione && this._cfg.nazione !== "IT"
+        ? "epgshare"
+        : "sorrisi";
+    }
     if (this.card) this._render();
   }
 
@@ -90,12 +97,15 @@ class TvGuideEpgCard extends HTMLElement {
   }
 
   _poster(info) {
-    if (!info?.locandina) return null;
+    if (!info?.locandina) {
+      return this._el("div", "tvg-poster-fallback", "TV");
+    }
     const img = this._el("img", "tvg-poster");
     img.alt = "";
     img.loading = "lazy";
     img.decoding = "async";
-    img.referrerPolicy = "strict-origin-when-cross-origin";
+    // Some EPG image hosts reject requests carrying a cross-site Referer.
+    img.referrerPolicy = "no-referrer";
     img.src = info.locandina;
     img.addEventListener("error", () => {
       const fallback = this._el("div", "tvg-poster-fallback", "TV");
