@@ -16,6 +16,10 @@ class TvGuideEpgCard extends HTMLElement {
     return {type: "custom:tv-guide-epg-card", title: "Guida TV"};
   }
 
+  static getConfigElement() {
+    return document.createElement("tv-guide-epg-card-editor");
+  }
+
   setConfig(cfg) {
     this._cfg = {
       show_refresh: true,
@@ -44,6 +48,7 @@ class TvGuideEpgCard extends HTMLElement {
       const a = state.attributes || {};
       if (!a.canale || !a.tipo) continue;
       if (this._cfg.nazione && a.nazione !== this._cfg.nazione) continue;
+      if (this._cfg.source_id && a.source_id !== this._cfg.source_id) continue;
       if (this._cfg.channels && !this._cfg.channels.includes(a.canale)) continue;
       this._entityIds.push(entityId);
       if (!byChannel.has(a.canale)) byChannel.set(a.canale, {posizione: a.posizione ?? 999});
@@ -269,6 +274,93 @@ class TvGuideEpgCard extends HTMLElement {
   }
 
   getCardSize() { return 5; }
+}
+
+/**
+ * Visual editor. The available sources are read from the integration sensors,
+ * so the editor never offers a provider that the backend has not loaded.
+ */
+class TvGuideEpgCardEditor extends HTMLElement {
+  constructor() {
+    super();
+    this._config = {};
+    this._hass = null;
+  }
+
+  setConfig(config) {
+    this._config = {...config};
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  _render() {
+    if (!this._hass || !this._config) return;
+    const sources = new Map();
+    for (const state of Object.values(this._hass.states || {})) {
+      const attrs = state.attributes || {};
+      if (!attrs.source_id) continue;
+      if (this._config.nazione && attrs.nazione !== this._config.nazione) continue;
+      sources.set(attrs.source_id, attrs.fonte || attrs.source_id);
+    }
+
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "grid";
+    wrapper.style.gap = "8px";
+    const label = document.createElement("label");
+    label.textContent = "Fonte EPG";
+    const select = document.createElement("select");
+    select.style.width = "100%";
+    select.style.minHeight = "40px";
+    select.style.padding = "8px";
+    select.style.border = "1px solid var(--divider-color)";
+    select.style.borderRadius = "6px";
+    select.style.background = "var(--card-background-color)";
+    select.style.color = "var(--primary-text-color)";
+
+    if (!sources.size) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "Nessuna fonte EPG disponibile";
+      select.appendChild(option);
+      select.disabled = true;
+    } else {
+      for (const [id, name] of sources) {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = name;
+        select.appendChild(option);
+      }
+      const selected = this._config.source_id;
+      select.value = sources.has(selected) ? selected : sources.keys().next().value;
+    }
+
+    select.addEventListener("change", () => {
+      const config = {...this._config, source_id: select.value};
+      this._config = config;
+      this.dispatchEvent(new CustomEvent("config-changed", {
+        detail: {config},
+        bubbles: true,
+        composed: true,
+      }));
+    });
+
+    label.appendChild(select);
+    wrapper.appendChild(label);
+    const help = document.createElement("div");
+    help.style.color = "var(--secondary-text-color)";
+    help.style.fontSize = "12px";
+    help.textContent = "La fonte scelta vale solo per questa scheda.";
+    wrapper.appendChild(help);
+    this.replaceChildren(wrapper);
+  }
+}
+
+if (!customElements.get("tv-guide-epg-card-editor")) {
+  customElements.define("tv-guide-epg-card-editor", TvGuideEpgCardEditor);
 }
 
 if (!customElements.get("tv-guide-epg-card")) {
