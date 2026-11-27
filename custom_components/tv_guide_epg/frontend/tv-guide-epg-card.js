@@ -24,6 +24,7 @@ class TvGuideEpgCard extends HTMLElement {
     this._cfg = {
       show_refresh: true,
       show_timestamp: true,
+      source_id: "sorrisi",
       ...cfg,
     };
     if (this.card) this._render();
