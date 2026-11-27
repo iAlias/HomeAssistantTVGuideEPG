@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-2.3.0-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.3.1-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇮🇹 [Leggi in italiano](README.it.md)
@@ -20,7 +20,7 @@ For Italy, four providers are selectable independently in each card: Sorrisi, IP
 ZapprTV and EPG Italia. Each provider has its own coordinator and sensor set. This means that
 two cards can display different EPG providers at the same time.
 
-> **Testing status:** version 2.3.0 is under testing on the
+> **Testing status:** version 2.3.1 is under testing on the
 > [feature branch](https://github.com/iAlias/HomeAssistantTVGuideEPG/tree/feature/card-source-selector)
 > and has not been merged into `main` or published as a HACS release. Provider feeds and channel
 > coverage must be checked in a real Home Assistant installation. See [Provider notes](#provider-notes).
@@ -81,7 +81,18 @@ configured country (Sorrisi for Italy).
 
 ## Installation
 
-### HACS
+### Home Assistant Marketplace (Home Assistant 2026.11 and newer)
+
+1. Open **Settings → Marketplace**.
+2. Select **Add from link** in the upper-right corner.
+3. In **GitHub link**, enter `https://github.com/iAlias/HomeAssistantTVGuideEPG`.
+4. Select **Add**. If the Marketplace cannot detect the content type, choose **Integration** and add it again.
+5. Open **TV Guide EPG** from the repository list and select **Install**.
+6. Follow the integration setup flow. If Home Assistant asks for a restart, restart before completing setup.
+
+Adding a custom repository requires connecting a GitHub account to the Marketplace. The repository must be public and contain the `hacs.json` file in its root.
+
+### Older installations using HACS (Home Assistant 2026.10 and older)
 
 1. Open **HACS → Integrations → ⋮ → Custom repositories**.
 2. Add `https://github.com/iAlias/HomeAssistantTVGuideEPG` with category **Integration**.
@@ -89,10 +100,6 @@ configured country (Sorrisi for Italy).
 4. Go to **Settings → Devices & services → Add integration**.
 5. Search for **TV Guide EPG**, choose a country and complete setup.
 
-To test the in-progress 2.3.0 changes, use the
-[feature/card-source-selector branch](https://github.com/iAlias/HomeAssistantTVGuideEPG/tree/feature/card-source-selector)
-or download its [ZIP archive](https://github.com/iAlias/HomeAssistantTVGuideEPG/archive/refs/heads/feature/card-source-selector.zip).
-This branch is not a published HACS release.
 
 ### Manual installation
 
