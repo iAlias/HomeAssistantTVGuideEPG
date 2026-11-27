@@ -84,6 +84,7 @@ class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
             "canale": self._channel,
             "nazione": self._country_code,
             "fonte": COUNTRIES[self._country_code].name,
+            "source_id": "sorrisi" if self._country_code == "IT" else "epgshare",
             "tipo": self._slot,
             "posizione": self._position,
             "orario_inizio": program.get("orario_inizio"),
