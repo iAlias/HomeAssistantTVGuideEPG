@@ -7,7 +7,7 @@
 [![Validate](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml/badge.svg)](https://github.com/iAlias/HomeAssistantTVGuideEPG/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41bdf5)](https://hacs.xyz/)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.1%2B-41bdf5)](https://www.home-assistant.io/)
-[![Version](https://img.shields.io/badge/version-2.3.0-orange)](custom_components/tv_guide_epg/manifest.json)
+[![Version](https://img.shields.io/badge/version-2.3.1-orange)](custom_components/tv_guide_epg/manifest.json)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 🇬🇧 [Read in English](README.md)
@@ -20,7 +20,7 @@ Per l'Italia puoi scegliere tra quattro fonti: **Sorrisi, IPTV-EPG.org, ZapprTV 
 Ogni fonte ha il proprio coordinator e i propri sensori. La scelta viene salvata nella singola
 scheda: puoi quindi usare fonti diverse in due card contemporaneamente.
 
-> **Stato della versione:** la 2.3.0 è in fase di test sul
+> **Stato della versione:** la 2.3.1 è in fase di test sul
 > [branch feature/card-source-selector](https://github.com/iAlias/HomeAssistantTVGuideEPG/tree/feature/card-source-selector).
 > Non è ancora stata unita in `main` e non è una release HACS. I feed e la copertura dei canali
 > devono essere verificati su una vera installazione Home Assistant. Vedi [Note sulle fonti](#note-sulle-fonti).
@@ -80,7 +80,18 @@ primaria, cioè Sorrisi.
 
 ## Installazione
 
-### HACS
+### Home Assistant Marketplace (Home Assistant 2026.11 e successive)
+
+1. Apri **Impostazioni → Marketplace**.
+2. Seleziona **Aggiungi da link** in alto a destra.
+3. Nel campo **Link GitHub**, inserisci `https://github.com/iAlias/HomeAssistantTVGuideEPG`.
+4. Seleziona **Aggiungi**. Se Marketplace non riconosce il tipo, scegli **Integrazione** e aggiungi di nuovo.
+5. Apri **TV Guide EPG** nell'elenco dei repository e seleziona **Installa**.
+6. Segui la procedura di configurazione. Se Home Assistant richiede un riavvio, riavvia prima di completare la configurazione.
+
+Per aggiungere un repository personalizzato devi collegare un account GitHub a Marketplace. Il repository deve essere pubblico e contenere il file `hacs.json` nella cartella principale.
+
+### Installazioni precedenti con HACS (Home Assistant 2026.10 e precedenti)
 
 1. Apri **HACS → Integrazioni → ⋮ → Repository personalizzati**.
 2. Aggiungi `https://github.com/iAlias/HomeAssistantTVGuideEPG` con categoria **Integrazione**.
@@ -88,10 +99,6 @@ primaria, cioè Sorrisi.
 4. Vai in **Impostazioni → Dispositivi e servizi → Aggiungi integrazione**.
 5. Cerca **TV Guide EPG**, scegli il paese e completa la configurazione.
 
-Per provare le modifiche della 2.3.0 usa il
-[branch feature/card-source-selector](https://github.com/iAlias/HomeAssistantTVGuideEPG/tree/feature/card-source-selector)
-oppure scarica il [pacchetto ZIP](https://github.com/iAlias/HomeAssistantTVGuideEPG/archive/refs/heads/feature/card-source-selector.zip).
-Questo branch non è una release HACS.
 
 ### Installazione manuale
 
