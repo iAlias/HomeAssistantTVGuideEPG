@@ -48,7 +48,7 @@ class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
         self._attr_icon = SLOT_ICONS[slot]
         # Keep existing Sorrisi entity IDs stable; namespace every additional provider.
         base = f"tvguide_epg_{country_code.lower()}_{slugify(channel)}_{slot}"
-        self._attr_unique_id = base if source_id == "sorrisi" or source_id == "default" else f"{base}_{source_id}"
+        self._attr_unique_id = base if source_id in {"sorrisi", "epgshare", "default"} else f"{base}_{source_id}"
 
     @property
     def _program(self) -> Optional[Dict[str, Optional[str]]]:
