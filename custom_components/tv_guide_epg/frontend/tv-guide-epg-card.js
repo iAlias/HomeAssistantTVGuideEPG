@@ -336,6 +336,15 @@ class TvGuideEpgCardEditor extends HTMLElement {
       }
       const selected = this._config.source_id;
       select.value = sources.has(selected) ? selected : sources.keys().next().value;
+      if (!selected) {
+        const config = {...this._config, source_id: select.value};
+        this._config = config;
+        this.dispatchEvent(new CustomEvent("config-changed", {
+          detail: {config},
+          bubbles: true,
+          composed: true,
+        }));
+      }
     }
 
     select.addEventListener("change", () => {
