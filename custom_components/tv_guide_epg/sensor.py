@@ -1,11 +1,4 @@
-"""TV Guide EPG sensors: two per channel.
-
-Each channel gets a "Ora in onda" and a "Prima serata" sensor — for Italy that
-is 24 entities. Putting every channel in the attributes of a single entity, as
-earlier versions did, made the data invisible unless you also installed the
-card; one entity per channel is directly usable in dashboards and automations.
-"""
-
+"""One now and one prime-time sensor per channel and EPG source."""
 from __future__ import annotations
 
 from typing import Dict, Optional
@@ -23,54 +16,44 @@ from .countries import COUNTRIES
 
 SLOT_NOW = "ora_in_onda"
 SLOT_PRIME = "prima_serata"
-
 SLOT_LABELS = {SLOT_NOW: "Ora in onda", SLOT_PRIME: "Prima serata"}
 SLOT_ICONS = {SLOT_NOW: "mdi:television-play", SLOT_PRIME: "mdi:movie-open"}
-
 NO_DATA = "Nessun dato"
 
 
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
-) -> None:
-    """Create two sensors for every channel this country covers."""
-    coordinator: EpgCoordinator = hass.data[DOMAIN][entry.entry_id]
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
+                            async_add_entities: AddEntitiesCallback) -> None:
+    coordinators = hass.data[DOMAIN][entry.entry_id]
     country_code = entry.data[CONF_COUNTRY]
-
-    async_add_entities(
-        EpgChannelSensor(coordinator, country_code, channel, slot, position)
-        for position, channel in enumerate(coordinator.channels, start=1)
-        for slot in (SLOT_NOW, SLOT_PRIME)
-    )
+    entities = []
+    for source_id, coordinator in coordinators.items():
+        for position, channel in enumerate(coordinator.channels, start=1):
+            for slot in (SLOT_NOW, SLOT_PRIME):
+                entities.append(EpgChannelSensor(
+                    coordinator, country_code, channel, slot, position, source_id
+                ))
+    async_add_entities(entities)
 
 
 class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
-    """What is on one channel, either right now or in prime time."""
-
-    def __init__(
-        self,
-        coordinator: EpgCoordinator,
-        country_code: str,
-        channel: str,
-        slot: str,
-        position: int,
-    ) -> None:
+    def __init__(self, coordinator: EpgCoordinator, country_code: str, channel: str,
+                 slot: str, position: int, source_id: str) -> None:
         super().__init__(coordinator)
         self._country_code = country_code
         self._channel = channel
         self._slot = slot
         self._position = position
-        self._attr_name = f"{channel} - {SLOT_LABELS[slot]}"
+        self._source_id = source_id
+        self._attr_name = f"{channel} - {SLOT_LABELS[slot]} ({coordinator.source_name})"
         self._attr_icon = SLOT_ICONS[slot]
-        self._attr_unique_id = (
-            f"tvguide_epg_{country_code.lower()}_{slugify(channel)}_{slot}"
-        )
+        # Keep existing Sorrisi entity IDs stable; namespace every additional provider.
+        base = f"tvguide_epg_{country_code.lower()}_{slugify(channel)}_{slot}"
+        self._attr_unique_id = base if source_id == "sorrisi" or source_id == "default" else f"{base}_{source_id}"
 
     @property
     def _program(self) -> Optional[Dict[str, Optional[str]]]:
         now, prime = self.coordinator.data
-        schedule = now if self._slot == SLOT_NOW else prime
-        return schedule.get(self._channel)
+        return (now if self._slot == SLOT_NOW else prime).get(self._channel)
 
     @property
     def native_value(self) -> str:
@@ -81,17 +64,12 @@ class EpgChannelSensor(CoordinatorEntity[EpgCoordinator], SensorEntity):
     def extra_state_attributes(self) -> Dict[str, object]:
         program = self._program or {}
         return {
-            "canale": self._channel,
-            "nazione": self._country_code,
-            "fonte": COUNTRIES[self._country_code].name,
-            "source_id": "sorrisi" if self._country_code == "IT" else "epgshare",
-            "tipo": self._slot,
-            "posizione": self._position,
+            "canale": self._channel, "nazione": self._country_code,
+            "fonte": self.coordinator.source_name, "source_id": self._source_id,
+            "tipo": self._slot, "posizione": self._position,
             "orario_inizio": program.get("orario_inizio"),
             "orario_fine": program.get("orario_fine"),
-            "genere": program.get("genere"),
-            "locandina": program.get("locandina"),
-            "descrizione": program.get("descrizione"),
-            "prossimi": program.get("prossimi", []),
+            "genere": program.get("genere"), "locandina": program.get("locandina"),
+            "descrizione": program.get("descrizione"), "prossimi": program.get("prossimi", []),
             "errore_sorgente": self.coordinator.last_source_error,
         }
